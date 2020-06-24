@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="node">
+
+    <!--通过list树形菜单递归拼接无限级菜单-->
+    <resultMap id="BaseTreeResultMap" type="com.fwtai.bean.Menu">
+        <result column="kid" property="kid"/>
+        <result column="name" property="name"/>
+        <collection column="kid" property="children" javaType="java.util.ArrayList" ofType="com.fwtai.bean.Menu" select="getNextNodeTree"/>
+    </resultMap>
+
+    <resultMap id="NextTreeResultMap" type="com.fwtai.bean.Menu">
+        <result column="kid" property="kid"/>
+        <result column="name" property="name"/>
+        <collection column="kid" property="children" javaType="java.util.ArrayList" ofType="com.fwtai.bean.Menu" select="getNextNodeTree"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+		kid, name
+    </sql>
+
+    <select id="getNextNodeTree" resultMap="NextTreeResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM node
+        WHERE pid = #{kid}
+    </select>
+
+    <!--通过MyBatis collection 集合嵌套查询树形节点获取菜单树,用法: final List<Menu> list = dao.selectListEntity("node.getNodeTree");-->
+    <select id="getNodeTree" resultMap="BaseTreeResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM node
+        WHERE pid = '88888888888888888888888888888888'
+    </select>
+</mapper>
+<!--
+    以下是关键的知识点：
+    – column 代表会拿父节点 kid ，作为参数获取 children 对象
+    – javaType 代表 children 对象是个列表，其实可以省略不写,这个children要和实体类com.fwtai.bean.Menu的private List<Menu> children的名称要一致
+    – ofType 用来区分 JavaBean 属性类型和集合包含的类型
+    – select 是用来执行循环哪个 SQL
+
+    CREATE TABLE `node`  (
+      `id` int(0) UNSIGNED NOT NULL AUTO_INCREMENT,
+      `name` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+      `parent_id` int(0) UNSIGNED NOT NULL,
+      PRIMARY KEY (`id`) USING BTREE,
+      INDEX `parent_id`(`parent_id`) USING BTREE
+    ) ENGINE = InnoDB AUTO_INCREMENT = 10 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '节点表' ROW_FORMAT = Dynamic;
+-->

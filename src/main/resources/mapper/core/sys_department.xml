@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="sys_department">
+
+    <!-- 组织机构 -->
+
+    <!-- 添加数据 -->
+    <update id="add" parameterType="HashMap">
+        INSERT INTO SYS_DEPARTMENT (
+        <trim suffixOverrides=",">
+            <if test="kid != null and kid != ''">kid,</if>
+            <if test="dep_name != null and dep_name != ''">dep_name,</if>
+            <if test="parent_id != null and parent_id != ''">parent_id,</if>
+            <if test="dep_exist != null and dep_exist != ''">dep_exist,</if>
+            <if test="isParent != null and isParent != ''">isParent,</if>
+            <if test="seq != null and seq != ''">seq,</if>
+            <if test="creator != null and creator != ''">creator,</if>
+            <if test="description != null and description != ''">description</if>
+        </trim>
+        ) VALUES (
+        <trim suffixOverrides=",">
+            <if test="kid != null and kid != ''">#{kid},</if>
+            <if test="dep_name != null and dep_name != ''">#{dep_name},</if>
+            <if test="parent_id != null and parent_id != ''">#{parent_id},</if>
+            <if test="dep_exist != null and dep_exist != ''">#{dep_exist},</if>
+            <if test="isParent != null and isParent != ''">#{isParent},</if>
+            <if test="seq != null and seq != ''">#{seq},</if>
+            <if test="creator != null and creator != ''">#{creator},</if>
+            <if test="description != null and description != ''">#{description}</if>
+        </trim>
+        )
+    </update>
+
+    <!-- 编辑数据 -->
+    <update id="edit" parameterType="pfd">
+        UPDATE SYS_DEPARTMENT
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="dep_name != null and dep_name != ''">dep_name = #{dep_name},</if>
+            <if test="dep_exist != null and dep_exist != ''">dep_exist = #{dep_exist},</if>
+            <if test="isParent != null and isParent != ''">isParent = #{isParent},</if>
+            <if test="seq != null and seq != ''">seq = #{seq},</if>
+            <if test="description != null and description != ''">description = #{description}</if>
+        </trim>
+        WHERE kid = #{kid}
+    </update>
+
+    <!-- 行删除 -->
+    <delete id="delById" parameterType="String">
+		DELETE FROM SYS_DEPARTMENT WHERE kid = #{kid}
+	</delete>
+
+    <!-- 查询组织机构是否已被使用 -->
+    <select id="queryOccupyDep" resultType="Integer" parameterType="String">
+        SELECT COUNT(KID) TOTAL FROM sys_dep_user WHERE DEP_ID = #{kid}
+    </select>
+
+    <!-- 如果删除当前的节点后的父节点没有子节点的话,更新为没有子节点1 -->
+    <!--  -->
+    <select id="queryTotalDep" resultType="Integer" parameterType="String">
+        SELECT COUNT(kid) TOTAL FROM SYS_DEPARTMENT WHERE parent_id = #{parent_id}
+    </select>
+
+    <!-- 如果删除当前的节点后的父节点没有子节点的话,更新为没有子节点2 -->
+    <update id="editParents" parameterType="String">
+        UPDATE SYS_DEPARTMENT SET isParent = 0 WHERE isParent = 1 AND kid = #{parent_id}
+    </update>
+
+    <!-- 编辑时如果该节点还有呢子节点则更新为是父节点 -->
+    <update id="updateParents" parameterType="String">
+        UPDATE SYS_DEPARTMENT SET isParent = 1 WHERE isParent = 0 AND kid = #{parent_id}
+    </update>
+
+    <!-- 根据id获取全字段数据 -->
+    <select id="queryById" parameterType="String" resultType="HashMap">
+		SELECT
+			dep_name,
+			parent_id,
+			seq,
+			ctime,
+			creator
+		FROM SYS_DEPARTMENT WHERE kid = #{kid}
+	</select>
+
+    <!-- 查询所有的菜单,用于菜单的添加或编辑 -->
+    <select id="queryAllDepartment" parameterType="HashMap" resultType="HashMap">
+		SELECT kid,dep_name name,isParent,parent_id FROM SYS_DEPARTMENT WHERE parent_id = #{kid}
+	</select>
+</mapper>

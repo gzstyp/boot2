@@ -1,0 +1,309 @@
+@CHARSET "UTF-8";
+body{
+	margin: 0;
+	padding:0px;
+}
+a:link,a:visited,a:hover,a:active {
+	text-decoration: none;
+	outline:none;
+}
+/**权限按钮样式*/
+.authClassToolbar{
+}
+/**layer隐藏容器样式*/
+.divLayer{
+	display:none;
+	padding:0 6px;
+	margin-top:6px;
+}
+/**为动态添加自定义下拉列表设置默认是隐藏的*/
+.block_hidden{
+	height:30px;
+	visibility:hidden;
+}
+
+.authClassBtn{
+	width: auto;
+	height: 28px;
+	line-height:28px;
+}
+
+/**重新datagrid默认的高度及重新datagrid复选框容器的高度,可选值30;32;36;38;[{38,38,10},{32,32,8}]*/
+.datagrid-cell,.datagrid-btable tr,div.datagrid-cell-check,div.datagrid-cell-check_bak{
+	height:32px;
+	line-height:32px;
+	font-size:13px;
+}
+
+/**重新datagrid复选框的高度,可选值8;10;[{38,38,10},{32,32,8}]*/
+div.datagrid-cell-check input{
+	margin-top:8px;
+}
+
+/**修改表格表头里面字体大小*/
+.datagrid-header .datagrid-cell span{
+    font-size:13px;
+}
+
+/**layer弹出层的第1个按钮的样式,调用:skin : "layer2btn"*/
+.layer2btn > .layui-layer-btn > .layui-layer-btn0 {
+    background-color: #39f;
+    border-color: #39f;
+}
+
+/**layer弹出层的第2个按钮的样式,调用:skin : "layer2btn"*/
+.layer2btn > .layui-layer-btn > .layui-layer-btn1 {
+    background-color: #f22;
+    border-color: #f22;
+}
+
+/**权限按钮样式1,如果要显示多个按钮的话,则用table容器装起*/
+.btn_css {
+  font-family: Arial;
+  color: #fff;
+  font-size: 14px;
+  height:28px;
+  line-height:28px;
+  text-align:center;
+  vertical-align:middle;
+  text-decoration: none;
+  -webkit-border-radius:3px;
+  -moz-border-radius: 3px;
+  border-radius: 3px;
+  border: solid #3b8cff 0px;
+  background: #3b8cff;
+  cursor: pointer;
+}
+.btn_css:hover {
+  background: #4cb0f9;
+}
+/**权限按钮样式2,如果要显示多个按钮的话,则用table容器装起*/
+.btn_yellow {
+  font-family: Arial;
+  color: #fff;
+  font-size: 14px;
+  height:28px;
+  line-height:28px;
+  text-align:center;
+  vertical-align:middle;
+  text-decoration: none;
+  -webkit-border-radius:3px;
+  -moz-border-radius: 3px;
+  border-radius: 3px;
+  border: solid #3b8cff 0px;
+  background: #ff5722;
+  cursor: pointer;
+}
+.btn_yellow:hover {
+  background: #4cb0f9;
+}
+
+/**按钮-两个字的样式[用于添加;编辑]*/  
+button.btn_102x28_blue{
+	color: #fff;
+	background: #00adf2 url(../../../../images/icons/btn_102x28_add_edit.png) no-repeat 0px 0px;
+	cursor:pointer;
+	border:0px;
+	width: 51px;
+	font-size:12px;
+	height:28px;
+	outline:none;
+}
+button.btn_102x28_blue:hover {
+	background: #51b7ec url(../../../../images/icons/btn_102x28_add_edit.png) no-repeat -51px 0px;
+	outline:none;
+}
+
+/**按钮-两个字的样式*/  
+button.btn_102x28_delete{
+	color: #fff;
+	background: #f15b6c url(../../../../images/icons/btn_102x28_delete.png) no-repeat 0px 0px;
+	cursor:pointer;
+	border:0px;
+	width: 51px;
+	font-size:12px;
+	height:28px;
+	outline:none;
+}
+button.btn_102x28_delete:hover {
+	background: #ff4351 url(../../../../images/icons/btn_102x28_delete.png) no-repeat -51px 0px;
+	outline:none;
+}
+
+/**按钮-两个字的样式*/  
+button.btn_102x28_green{
+	color: #fff;
+	background: #5fb878 url(../../../../images/icons/btn_102x28_green.png) no-repeat 0px 0px;
+	cursor:pointer;
+	border:0px;
+	width: 51px;
+	font-size:12px;
+	height:28px;
+	outline:none;
+}
+button.btn_102x28_green:hover {
+	background: #1ea45f url(../../../../images/icons/btn_102x28_green.png) no-repeat -51px 0px;
+	outline:none;
+}
+
+/**按钮-四个字的样式*/  
+button.btn_148x28_blue{
+	color: #fff;
+	background: #00adf2 url(../../../../images/icons/btn_148x28_blue.png) no-repeat 0px 0px;
+	cursor:pointer;
+	border:0px;
+	width: 74px;
+	font-size:12px;
+	height:28px;
+	outline:none;
+}
+button.btn_148x28_blue:hover {
+	background: #51b7ec url(../../../../images/icons/btn_148x28_blue.png) no-repeat -74px 0px;
+	outline:none;
+}
+
+/**按钮-五个字的样式*/  
+button.btn_168x28_dhs{
+	color: #fff;
+	background: #ff9999 url(../../../../images/icons/bbtn_168x28_dhs.png) no-repeat 0px 0px;
+	cursor:pointer;
+	border:0px;
+	width: 84px;
+	font-size:12px;
+	height:28px;
+	outline:none;
+}
+button.btn_168x28_dhs:hover {
+	background: #ee5b5b url(../../../../images/icons/btn_168x28_dhs.png) no-repeat -84px 0px;
+	outline:none;
+}
+
+
+/**按钮-四个字的样式*/  
+button.btn_148x28_dhs{
+	color: #fff;
+	background: #ff9999 url(../../../../images/icons/btn_148x28_dhs.png) no-repeat 0px 0px;
+	cursor:pointer;
+	border:0px;
+	width: 74px;
+	font-size:12px;
+	height:28px;
+	outline:none;
+}
+button.btn_148x28_dhs:hover {
+	background: #ee5b5b url(../../../../images/icons/btn_148x28_dhs.png) no-repeat -74px 0px;
+	outline:none;
+}
+
+/**按钮-六个字的样式*/  
+button.btn_190x28_blue{
+	color: #fff;
+	background: #00adf2 url(../../../../images/icons/btn_190x28_blue.png) no-repeat 0px 0px;
+	cursor:pointer;
+	border:0px;
+	width: 95px;
+	font-size:12px;
+	height:28px;
+	outline:none;
+}
+button.btn_190x28_blue:hover {
+	background: #51b7ec url(../../../../images/icons/btn_190x28_blue.png) no-repeat -95px 0px;
+	outline:none;
+}
+
+/**按钮-六个字的样式-淡黄色*/  
+button.btn_190x28_dhs{
+	color: #fff;
+	background: #ff9999 url(../../../../images/icons/btn_190x28_dhs.png) no-repeat 0px 0px;
+	cursor:pointer;
+	border:0px;
+	width: 95px;
+	font-size:12px;
+	height:28px;
+	outline:none;
+}
+button.btn_190x28_dhs:hover {
+	background: #ee5b5b url(../../../../images/icons/btn_190x28_dhs.png) no-repeat -95px 0px;
+	outline:none;
+}
+
+/**按钮-四个字的样式*/  
+button.btn_148x28_green{
+	color: #fff;
+	background: url(../../../../images/icons/btn_148x28_green.png) no-repeat 0px 0px;
+	cursor:pointer;
+	border:0px;
+	width: 74px;
+	font-size:12px;
+	height:28px;
+	outline:none;
+}
+button.btn_148x28_green:hover {
+	background: url(../../../../images/icons/btn_148x28_green.png) no-repeat -74px 0px;
+	outline:none;
+}
+
+/**按钮-四个字的样式*/  
+button.btn_148x28_delete{
+	color: #fff;
+	background: url(../../../../images/icons/btn_148x28_del.png) no-repeat 0px 0px;
+	cursor:pointer;
+	background-color:#f15b6c;
+	border:0px;
+	width: 74px;
+	font-size:12px;
+	height:28px;
+	outline:none;
+}
+button.btn_148x28_delete:hover {
+	background: url(../../../../images/icons/btn_148x28_del.png) no-repeat -74px 0px;
+	background-color:#ff4351;
+	outline:none;
+}
+
+/**统一的输入框样式*/
+input.h24px{
+	height:24px;
+	line-height:24px;
+	border: solid #ddd 1px;
+	padding-left:4px;
+	font-size:12px;
+	border-radius:2px;
+}
+input.h24px.w240px{
+	width:240px;
+}
+input.h24px.w200px{
+	width:200px;
+}
+input.h24px.w160px{
+	width:160px;
+}
+input.h24px.w128px{
+	width:128px;
+}
+input.h24px.w110px{
+	width:110px;
+}
+
+selct.select_h24px{
+	height:24px;
+	line-height:24px;
+}
+
+selct.select_h24px.w160px{
+	width:160px;
+}
+
+span.required{
+	font-size:14px;
+	color:red;
+	margin-left:4px;
+}
+
+.css_dis{
+	color:#eee;
+	background-color:#e2e2e2;
+}
+/**IE6、7、8支持placeholder功能*/  
+.ie_placeholder{color:#767676; }

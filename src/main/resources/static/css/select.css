@@ -1,0 +1,15 @@
+@CHARSET "utf-8";
+/**省市县乡镇村组的样式*/
+.select{
+	border: 1px solid #ccc;
+	float: left;
+	display: inline;
+	width: 117px;
+	height:32px;
+ 	line-height:32px;
+ 	font-size: 12px;
+	margin-right:4px;
+	padding:6px 0;
+	outline:none;
+	cursor:pointer;
+}

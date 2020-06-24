@@ -1,0 +1,322 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="sys_user">
+
+	<!-- 账号列表的数据,采用左连接查询 -->
+    <select id="listData"  parameterType="HashMap" resultType="HashMap">
+        SELECT sur.uid,SDT.dep_name,
+        lt.rname,
+        sur.account,sur.enabled,sur.added FROM sys_user sur
+        LEFT JOIN sys_dep_user SUD
+        ON SUD.UID = sur.uid
+        LEFT JOIN sys_department SDT
+        ON SDT.KID = SUD.DEP_ID
+        left join (select group_concat(distinct re.rname)rname,ure.uid from sys_user_role ure left join sys_role re on re.rid = ure.rid group by ure.uid) lt on lt.uid = sur.uid
+        WHERE sur.account != 'admin' AND sur.type = 1
+        <if test="account != null and account != '' ">
+            AND sur.account LIKE CONCAT('%',#{account},'%')
+        </if>
+        <choose>
+            <when test="order != null and sort != null">
+                <![CDATA[ ORDER BY ${sort} ${order} ]]>
+            </when>
+        </choose>
+        <![CDATA[ LIMIT #{section},#{pageSize} ]]>
+    </select>
+
+    <!--采用子查询-->
+    <select id="listData_bakup"  parameterType="HashMap" resultType="HashMap">
+        SELECT sur.uid,SDT.dep_name,(SELECT group_concat(distinct re.rname)rname FROM sys_role re WHERE re.rid IN (SELECT ure.rid FROM sys_user_role ure WHERE ure.uid = sur.uid))rname,sur.account,sur.enabled,sur.added FROM sys_user sur
+        LEFT JOIN sys_dep_user SUD
+        ON SUD.UID = sur.uid
+        LEFT JOIN sys_department SDT
+        ON SDT.KID = SUD.DEP_ID
+        WHERE sur.account != 'admin' AND sur.type = 1
+        <if test="account != null and account != '' ">
+            AND sur.account LIKE CONCAT('%',#{account},'%')
+        </if>
+        <choose>
+            <when test="order != null and sort != null">
+                <![CDATA[ ORDER BY ${sort} ${order} ]]>
+            </when>
+        </choose>
+        <![CDATA[ LIMIT #{section},#{pageSize} ]]>
+    </select>
+	
+	<!-- 账号列表的总条数总记录数 -->
+	<select id="listTotal"  parameterType="HashMap" resultType="Integer">
+        SELECT COUNT(sur.uid)total FROM sys_user sur
+        WHERE sur.account != 'admin' AND sur.type = 1
+        <if test="account != null and account != '' ">
+            AND sur.account LIKE CONCAT('%',#{account},'%')
+        </if>
+	</select>
+
+	<insert id="add" parameterType="pfd">
+		<![CDATA[ INSERT INTO sys_user(uid,account,pwd,type,added) VALUES (#{uid},#{account},#{pwd},#{type},#{added})]]>
+	</insert>
+	
+	<!-- 查询禁用启用状态,先判断账号是否存在后再调用本方法 -->
+	<select id="queryEnabled"  parameterType="String" resultType="String">
+		<![CDATA[ SELECT enabled FROM sys_user WHERE uid = #{uid} ]]>
+	</select>
+	
+	<!-- 账号是否已被禁用状态,用于登录验证 -->
+	<select id="queryUserEnabled" parameterType="String" resultType="String">
+		<![CDATA[ SELECT enabled FROM sys_user WHERE account = #{account} ]]>
+	</select>
+	
+	<!-- 根据id查询账号 -->
+	<select id="queryUserById" parameterType="String" resultType="String">
+		<![CDATA[ SELECT account FROM sys_user WHERE uid = #{login_key} AND deleted = 0]]>
+	</select>
+	
+	<!-- 根据id及账号查询是否存在 -->
+	<select id="queryUserByHashMap" parameterType="HashMap" resultType="String">
+		<![CDATA[ SELECT uid FROM sys_user WHERE uid = #{uid} AND account = #{account} AND deleted = 0]]>
+	</select>
+	
+	<!-- 行删除账号 -->
+	<delete id="delById" parameterType="String">
+		<![CDATA[ DELETE FROM sys_user WHERE uid = #{id} ]]>
+	</delete>
+	<!-- 行删除账号-删除对应的账号角色 -->
+	<delete id="delUserRoleByUid" parameterType="String">
+		<![CDATA[ DELETE FROM sys_user_role WHERE uid = #{id} ]]>
+	</delete>
+	<!-- 行删除账号-删除对应的账号私有菜单 -->
+	<delete id="delUserMenuByUid" parameterType="String">
+		<![CDATA[ DELETE FROM sys_user_menu WHERE uid = #{id} ]]>
+	</delete>
+	
+	<!-- 批量删除账号-->
+	<delete id="del">
+		DELETE FROM sys_user WHERE 
+			uid IN
+		<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	
+	<!-- 批量删除对应的账号私有菜单-->
+	<delete id="delUserMenu">
+		DELETE FROM sys_user_menu WHERE
+			uid IN
+		<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	
+	<!-- 批量删除对应的账号角色  -->
+	<delete id="delUserRole">
+		DELETE FROM sys_user_role WHERE
+			uid IN
+		<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	
+	<!-- 账号操作:(禁用|启用)-->
+	<update id="changeEnabled" parameterType="pfd">
+		<![CDATA[ UPDATE sys_user SET enabled = #{type} WHERE uid = #{uid} ]]>
+	</update>
+	
+	<!-- 账号列表的重置密码 -->
+	<update id="editPwd" parameterType="pfd">
+		<![CDATA[ UPDATE sys_user SET pwd = #{newPwd} WHERE uid = #{id} ]]>
+	</update>
+	
+	<!-- 修改登录者的密码 -->
+	<update id="alterPwd" parameterType="pfd">
+		<![CDATA[ UPDATE sys_user SET pwd = #{pwd} WHERE uid = #{uid} AND account = #{account}]]>
+	</update>
+	
+	<!-- 验证登录信息 -->
+	<select id="verificationLogin" parameterType="pfd" resultType="String">
+		<![CDATA[ SELECT uid FROM sys_user WHERE account = #{account} AND pwd = #{pwd_current} ]]>
+	</select>
+	
+	<!-- 账号登录验证 -->
+	<select id="login" parameterType="pfd" resultType="String">
+		<![CDATA[ SELECT uid FROM sys_user WHERE account = #{account} AND pwd = #{pwd} ]]>
+	</select>
+
+	<!-- 查询账号是否已存在 -->
+	<select id="queryAccountExist" parameterType="String" resultType="String">
+		<![CDATA[ SELECT uid FROM sys_user WHERE account = #{account}]]>
+	</select>
+	
+	<!-- 登录者为admin时加载读取账号|用户私有菜单[分配] -->
+	<select id="userMenu" parameterType="HashMap" resultType="HashMap">
+		<![CDATA[ 
+			SELECT a.id,a.name text,case when a.ustate = 1 then 'open' else 'closed' end state,
+			CASE WHEN (SELECT count(um.id)total FROM sys_user_menu um WHERE um.uid = #{keyUid} AND um.mid = a.id)>0 THEN 'true' ELSE 'false' END checked
+ 				 FROM sys_menu a WHERE a.pid = #{pId} ORDER BY text
+ 		]]>
+	</select>
+	
+	<!-- 登录者不是admin时加载读取账号|用户私有菜单[分配],登录者的私有菜单及外加欲给目标账号自身的私有菜单,UNION后面的就是目标账号自身的私有菜单,UNION前部分是登录者的私有菜单并判断目标账号是否有该菜单,即umu.uid = #{keyUid}-->
+	<select id="userMenuByLoginKey" parameterType="HashMap" resultType="HashMap">
+		<![CDATA[
+			SELECT id,text,state,checked FROM (SELECT mu.id,mu.name text,case when mu.ustate = 1 then 'open' else 'closed' end state,CASE WHEN (SELECT count(umu.id)total FROM sys_user_menu umu WHERE umu.uid = #{keyUid}
+			AND umu.mid = lk.mid)>0 THEN 'true' ELSE 'false' END checked FROM (SELECT mid FROM sys_user_menu WHERE uid = #{login_key})lk,sys_menu mu WHERE mu.pid = #{pId} AND mu.id = lk.mid
+			UNION
+			SELECT mu.id,mu.name text,CASE WHEN mu.ustate = 1 then 'open' ELSE 'closed' END state,CASE WHEN (SELECT count(umu.id)total FROM sys_user_menu umu WHERE umu.uid = #{keyUid}
+			AND umu.mid = lk.mid)>0 THEN 'true' ELSE 'false' END checked FROM (SELECT mid FROM sys_user_menu WHERE uid = #{keyUid})lk,sys_menu mu WHERE mu.pid = #{pId} AND mu.id = lk.mid) sm ORDER BY text
+ 		]]>
+	</select>
+	
+	<!-- 查看账号的菜单数据-->
+	<select id="viewMenuAdmin" parameterType="HashMap" resultType="HashMap">
+		<![CDATA[ 
+			SELECT l.id,l.name text,case when l.ustate = 1 then 'open' else 'closed' end state,
+			CASE WHEN (SELECT count(umu.id)total FROM sys_user_menu umu WHERE umu.uid = #{keyUid} AND umu.mid = l.id)>0 THEN 'true'
+			WHEN (SELECT count(umu.id)total FROM sys_role_menu umu WHERE umu.mid = l.id AND umu.rid 
+			IN (SELECT sur.rid FROM sys_user_role sur WHERE sur.uid = #{keyUid}))>0 THEN 'true'
+			ELSE 'false' END checked FROM sys_menu l LEFT JOIN 
+			(SELECT l.id FROM sys_menu l LEFT JOIN (SELECT mu.id FROM (SELECT mid FROM sys_user_menu WHERE uid = #{keyUid})lk,sys_menu mu 
+			WHERE mu.pid = #{pId} AND mu.id = lk.mid)r ON l.id = r.id WHERE l.pId = #{pId}
+			UNION
+			SELECT l.id FROM sys_menu l LEFT JOIN(
+			SELECT mu.id FROM (SELECT srm.mid FROM sys_role_menu srm WHERE srm.rid 
+			IN (SELECT sur.rid FROM sys_user_role sur WHERE sur.uid = #{keyUid}))mm,sys_menu mu 
+			WHERE mu.id = mm.mid and mu.pid = #{pId})r ON l.id = r.id WHERE l.pId = '0')r
+			ON l.id = r.id WHERE l.pId = #{pId} ORDER BY l.name
+ 		]]>
+	</select>
+	
+	<!-- 查看账号的菜单数据-这个查看菜单比较安全,因为只查询目标账号本身仅拥有的菜单-->
+	<select id="viewMenuUid" parameterType="HashMap" resultType="HashMap">
+		<![CDATA[ 
+			SELECT mu.id,mu.name text,case when mu.ustate = 1 then 'open' else 'closed' end state,CASE WHEN (SELECT count(umu.id)total FROM sys_user_menu umu WHERE umu.uid = #{keyUid}
+			AND umu.mid = lk.mid)>0 THEN 'true' ELSE 'false' END checked FROM (SELECT mid FROM sys_user_menu WHERE uid = #{keyUid})lk,sys_menu mu where mu.pid = #{pId} AND mu.id = lk.mid
+			UNION
+			SELECT mu.id,mu.name,case when mu.ustate = 1 then 'open' else 'closed' end state,
+			CASE WHEN (SELECT count(umu.id)total FROM sys_role_menu umu WHERE  umu.mid = mu.id)>0 THEN 'true' ELSE 'false' END checked FROM (
+			SELECT srm.mid FROM sys_role_menu srm WHERE srm.rid 
+			IN (SELECT sur.rid FROM sys_user_role sur WHERE sur.uid = #{keyUid}))mm,sys_menu mu 
+			WHERE mu.id = mm.mid and mu.pid = #{pId}
+ 		]]>
+	</select>
+	
+	<!-- 登录者为admin时加载读取账号|用户角色 -->
+	<select id="userRole" parameterType="HashMap" resultType="HashMap">
+		<![CDATA[ 
+			SELECT sr.rid id,sr.rname text,'open' state,
+			CASE WHEN (SELECT count(ur.id)total FROM sys_user_role ur WHERE ur.uid = #{keyUid}
+			AND ur.rid = sr.rid)>0 THEN 'true' ELSE 'false' END checked FROM sys_role sr ORDER BY sr.rname
+ 		]]>
+	</select>
+	
+	<!-- 登录者不是admin时加载读取账号|用户角色,外加欲给目标账号自身的角色,UNION后面的就是目标账号自身的角色 -->
+	<select id="userRoleByLoginKey" parameterType="HashMap" resultType="HashMap">
+		<![CDATA[ 
+			SELECT id,text,checked FROM (SELECT sr.rid id,re.rname text,CASE WHEN (SELECT count(ur.id)total FROM sys_user_role ur WHERE ur.uid = #{keyUid}
+			AND ur.rid = sr.rid)>0 THEN 'true' ELSE 'false' END checked FROM (SELECT rid FROM sys_user_role WHERE uid = #{login_key}) sr,sys_role re WHERE re.rid = sr.rid
+			UNION
+			SELECT sr.rid id,re.rname text,CASE WHEN (SELECT count(ur.id)total FROM sys_user_role ur WHERE ur.uid = #{keyUid}
+			AND ur.rid = sr.rid)>0 THEN 'true' ELSE 'false' END checked FROM (SELECT rid FROM sys_user_role WHERE uid = #{keyUid}) sr,sys_role re WHERE re.rid = sr.rid)m ORDER BY text
+ 		]]>
+	</select>
+	
+	<!-- 清空或删除已存在的账号|用户菜单 -->
+	<delete id="delUserMenuByRid" parameterType="String">
+		<![CDATA[ DELETE FROM sys_user_menu WHERE uid = #{uid} ]]>
+	</delete>
+	
+	<!-- 批量插入角色菜单表-角色菜单的保存 -->
+	<insert id="saveIds">
+		INSERT INTO sys_user_menu(id,uid,mid) VALUES
+		<foreach collection="list" item="item" index="index" separator="," >
+	       (#{item.id},#{item.uid},#{item.mid})
+	    </foreach>
+	</insert>
+	
+	<!-- 批量插入用户角色表的保存 -->
+	<insert id="saveRoleIds">
+		INSERT INTO sys_user_role(id,uid,rid) VALUES
+		<foreach collection="list" item="item" index="index" separator="," >
+	       (#{item.id},#{item.uid},#{item.rid})
+	    </foreach>
+	</insert>
+	
+	<!-- 根据账号id查询是否有分配角色 -->
+	<select id="queryRoleByUid" parameterType="String" resultType="Integer">
+		<![CDATA[ SELECT COUNT(id)total FROM sys_user_role WHERE uid = #{id}]]>
+	</select>
+	
+	<!-- 根据账号id查询是否有私有菜单 -->
+	<select id="queryMenuByUid" parameterType="String" resultType="Integer">
+		<![CDATA[ SELECT COUNT(id)total FROM sys_user_menu WHERE uid = #{id}]]>
+	</select>
+	
+	<!-- 更新登录次数 -->
+	<update id="updateTimes" parameterType="String">
+		<![CDATA[ UPDATE sys_user SET times = times+1 WHERE uid = #{uid} ]]>
+	</update>
+	
+	<!-- 最后登录时间 -->
+	<update id="updatelogintime" parameterType="HashMap">
+		<![CDATA[ UPDATE sys_user SET logintime = #{logintime} WHERE uid = #{uid} ]]>
+	</update>
+	
+	<!-- 判断用户锁定是否已经超过30分钟 -->
+	<select id="query_errors" parameterType="String" resultType="Long">
+		<![CDATA[ SELECT (NOW() - error_time)error FROM sys_user WHERE account = #{account} ]]>
+	</select>
+	<!-- 查询被锁定的时间 -->
+	<select id="lockTime" parameterType="String" resultType="String">
+		<![CDATA[ SELECT error_time FROM sys_user WHERE account = #{account} ]]>
+	</select>
+	<!-- 每错误一次就累加叠加1 -->
+	<update id="superposition" parameterType="String">
+		<![CDATA[ UPDATE sys_user SET error_count = error_count+1 WHERE account = #{account} ]]>
+	</update>
+	<!-- 查询错误次数 -->
+	<select id="query_error_count" resultType="Integer">
+		<![CDATA[ SELECT error_count FROM sys_user WHERE account = #{account} ]]>
+	</select>
+	<!-- 更新错误时刻 -->
+	<update id="update_time" parameterType="String">
+		<![CDATA[ UPDATE sys_user SET error_time = DATE_ADD(NOW(),INTERVAL 30 MINUTE) WHERE account = #{account} ]]>
+	</update>
+	<!-- 登录成功把时间设置为当前默认时间 -->
+	<update id="updateErrorTime" parameterType="String">
+		<![CDATA[ UPDATE sys_user SET error_time = NOW() WHERE uid = #{uid} ]]>
+	</update>
+	<!-- 登录成功把登录错误次数更改为0 -->
+	<update id="updateErrorCount" parameterType="String">
+		<![CDATA[ UPDATE sys_user SET error_count = 0  WHERE uid = #{uid} ]]>
+	</update>
+
+    <!-- 添加组织机构部门账号 -->
+    <update id="addDepUser" parameterType="pfd">
+        INSERT INTO sys_dep_user (KID,UID,DEP_ID) VALUES (#{KID},#{uid},#{DEP_ID})
+    </update>
+
+    <!-- 更新组织机构部门 -->
+    <update id="updateDepUser" parameterType="HashMap">
+        UPDATE sys_dep_user SET DEP_ID = #{DEP_ID} WHERE UID = #{id}
+    </update>
+
+    <!-- 组织机构部门账号是否存在 -->
+    <select id="queryDepUser" resultType="Integer" parameterType="HashMap">
+        SELECT COUNT(KID) TOTAL FROM sys_dep_user WHERE UID = #{id}
+    </select>
+
+    <!-- 删除组织机构部门账号 -->
+    <update id="delDepUser" parameterType="String">
+        DELETE FROM sys_dep_user WHERE UID = #{id}
+    </update>
+
+    <!-- 删除|批量删除组织机构部门账号-->
+    <delete id="delsDepUser" parameterType="ArrayList">
+        DELETE FROM SYS_DEP_USER WHERE
+        UID IN
+        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+</mapper>

@@ -1,0 +1,158 @@
+/**
+ * 登录页面的css样式
+ * 作者 田应平
+ * QQ:444141300
+ * web www.fwtai.com
+ * 创建时间  2016年12月29日 20:32:58
+*/
+
+*{
+	margin: 0px;
+	padding: 0px;
+	font-family: "Microsoft YaHei", "微软雅黑",fantasy,serif,Arial,monospace,tahoma,Roboto,Simsun,sans-serif,STXihei, "华文细黑","Hiragino Sans GB","\9ED1\4F53";
+	font-size: 12px;
+}
+
+ol,ul,li{
+	list-style-type: none;
+}
+
+a,a:hover{
+	text-decoration: none;
+	outline:none;
+}
+
+input,img{
+	border: none;
+	border: 1px solid none; /*针对IE6*/
+}
+
+/**登录的div块*/
+div#page-index{
+	width:450px;
+	height:340px;
+	position:absolute;
+	left:50%;
+	top:50%;
+	margin:-170px 0 0 -225px;
+	background-image:url('../../../images/home/login_box.png');
+	border-radius:8px;
+}
+
+/**登录的div块里的title的class*/
+div#page-index span.title{
+	display: block;
+	height: 24px;
+	width: 168px;
+	position:absolute;
+	left: 50%;
+	margin-top:40px;
+	margin-left: -84px;
+	color: #fff;
+	font-size: 20px;
+	text-align: center;
+}
+
+div#page-index img{
+	position:absolute;
+	height: 60px;
+	width: 60px;
+	top: 10px;
+	border: none;
+}
+
+/**左边图标*/
+div#page-index img.img-left{
+	left:16px;
+}
+
+/**右边图标-锁*/
+div#page-index img.img-right{
+	right:16px;
+}
+
+/*提示文字的样式*/
+span.span_display{
+	display: block;
+	width:50px;
+	text-align:right;
+	font-size:14px;
+}
+
+/**登录的div块里的span的样式*/
+div#page-index div span{
+	color: #fff;
+}
+
+/**登录的div块里的账号一栏*/
+div#page-index div.index-uname{
+	width:280px;
+	margin-top:100px;
+	position:absolute;
+	left: 50%;
+	margin-left: -140px;
+}
+
+/**登录的div块里的密码一栏*/
+div#page-index div.index-upwd{
+	width:280px;
+	margin-top:150px;
+	position:absolute;
+	left: 50%;
+	margin-left: -140px;
+}
+
+div#page-index div.index-code{
+	width:280px;
+	margin-top:200px;
+	position:absolute;
+	left: 50%;
+	margin-left: -140px;
+}
+
+/**登录的div的input样式*/
+div#page-index input.login-input{
+	width: 220px;
+	height:36px;
+	line-height:36px;
+	padding-left:2px;
+	text-align:left;
+}
+
+.userName_pwd{
+	width: 200px;
+	position: relative;
+	left:60px;
+	top:-24px;
+}
+
+/**登录的div的登录按钮样式*/
+div#page-index button.btn-success{
+	margin-top:250px;
+	width:60px;
+	position:absolute;
+	left: 40%;
+	margin-left: -30px;
+}
+
+/**登录的div的重置按钮样式*/
+div#page-index button.btn-danger{
+	margin-top:250px;
+	width:60px;
+	position:absolute;
+	left: 60%;
+	margin-left: -30px;
+}
+
+div#page-index p{
+	margin-top:296px;
+	position:absolute;
+	text-align: center;
+	line-height: 20px;
+	font-family:sans-serif;
+	width:354px;
+	height: 20px;
+	left: 50%;
+	color: #fff;
+	margin-left: -177px;
+}

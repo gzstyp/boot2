@@ -1,0 +1,12 @@
+body{font:14px/20px Helvetica,Arial,sans-serif;}
+a,.self{-webkit-transition:color .1s;-moz-transition:color .1s;-ms-transition:color .1s;-o-transition:color .1s;transition:color .1s}
+ul{margin:0;padding:0;list-style:none}
+.checkbox_radio_clear{position:relative;*zoom:1;}
+.checkbox_radio_clear:before,.checkbox_radio_clear:after{content:'';display:table;clear:both}
+.checkbox_radio{position:relative;padding:10px 10px 10px;background:#fff;}
+.checkbox_radio ul{float:right;white-space:nowrap;}
+.checkbox_radio ul:first-child{float:left}
+.checkbox_radio ul li{position:relative;padding:0 0 8px 20px}/**文字到复选框或单选框之间的水平距离及上下距离*/
+.checkbox_radio ul input{position:absolute;top:4px;left:0}
+.checkbox_radio ul .iradio_square-blue{position:absolute;top:3px;left:0}
+.icheckbox_square-blue{position:absolute;top:3px;left:0;}

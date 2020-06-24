@@ -1,0 +1,132 @@
+/**下拉菜单的样式*/
+div.select-main {
+	background-color:#fff;
+	border:1px solid #ddd;
+	border-radius:2px;
+	font-size:12px;
+	height:28px;
+	position:relative;
+	width:205px;
+	
+	-webkit-user-select:none; /* webkit (safari, chrome) browsers */
+    -moz-user-select:none; /* mozilla browsers */
+    -khtml-user-select:none; /* webkit (konqueror) browsers */
+    -ms-user-select:none; /* IE10+ */
+}
+
+div.select-main.z-index {
+    z-index:1;/*原先的值10*/
+}
+
+div.select-main.disabled {
+	cursor:default;
+	filter:alpha(opacity=50);
+	opacity:0.5;
+	zoom:1;
+}
+
+div.select-main.disabled div.select-set {
+	cursor:default;
+}
+
+div.select-main.disabled div.select-arrow {
+	cursor:default;
+}
+
+/**自定义下拉列表的高度*/
+div.select-set {
+	background-color:#FFF;
+	border-radius:2px;
+	color:#333;
+	cursor:pointer;
+	height:28px;
+	line-height:28px;
+	overflow:hidden;
+	position:relative;
+	padding:0 8px 0 8px;
+	width:78px;/**默认的宽度*/
+    z-index:1;/*原先的值5*/
+}
+
+div.select-arrow {
+	border-top:7px solid #2db2ff;
+	border-left:7px solid transparent;
+	border-right:7px solid transparent;
+	cursor:pointer;
+	height:0px;
+	position:absolute;
+	top:12px;
+	right:10px;
+	width:0px;
+    z-index:2;/*原先的值7*/
+}
+
+div.select-arrow.reverse {
+	border-top:7px solid transparent;
+	border-bottom:7px solid #2db2ff;
+	top:5px;
+}
+/**下拉时显示的宽度*/
+div.select-block {
+	background-color:#fff;
+    border-left:1px solid #ddd;
+    border-right:1px solid #ddd;
+    border-bottom:1px solid #ddd;
+    border-radius:5px;
+    left:-1px;
+    line-height:20px;
+    position:absolute;
+    top:16px;
+    width:205px;
+}
+/**下拉的样式控制*/
+ul{
+	margin-top:15px;
+	margin-bottom:0;
+}
+
+ul.select-list {
+	cursor:pointer;
+	/* margin:15px 0 7px; */
+	list-style:none;
+	padding:0;
+	
+}
+
+/* Scroll view */
+
+ul.select-list::-webkit-scrollbar {
+    width:12px;
+}
+
+ul.select-list::-webkit-scrollbar-track {
+    border-radius:10px;
+}
+
+ul.select-list::-webkit-scrollbar-thumb {
+    border-radius:10px;
+    -webkit-box-shadow:inset 0 0 1px rgba(0,0,0,0.5);
+}
+
+ul.select-list {
+	scrollbar-face-color:#aeb1b1;
+    scrollbar-shadow-color:#c7caca;
+    scrollbar-highlight-color:#ced1d1;
+    scrollbar-3dlight-color:#ced1d1;
+    scrollbar-darkshadow-color:#c7caca;
+    scrollbar-track-color:#ced1d1;
+    scrollbar-arrow-color:#333;
+}
+
+/* End scroll view */
+
+li.select-items {
+	color:#333;
+	padding:7px 15px;
+}
+
+li.select-items:hover,
+li.select-items.active {
+	background-color:#ddd;
+	color:#000;
+} 

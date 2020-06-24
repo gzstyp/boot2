@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="sys_menu">
+	
+	<!-- 添加菜单 -->
+	<update id="add" parameterType="HashMap">
+		<![CDATA[ INSERT INTO sys_menu(id,name,uri,pId,isParent,type,layer,relation,ustate,state) 
+			VALUES (#{id},#{name},#{uri},#{pId},#{isParent},#{type},#{layer},#{relation},#{ustate},#{state}) 
+		]]>
+	</update>
+	
+	<!-- 编辑菜单 -->
+	<update id="edit" parameterType="HashMap">
+		<![CDATA[ UPDATE sys_menu SET name = #{name},uri = #{uri},pId = #{pId},isParent = #{isParent},type = #{type},layer =#{layer}, relation = #{relation},state = #{state},ustate = #{ustate} WHERE id = #{id} ]]>
+	</update>
+	
+	<select id="queryLayerBypId" parameterType="String" resultType="Integer">
+		<![CDATA[ SELECT layer FROM sys_menu WHERE id = #{pId}]]>
+	</select>
+
+	<!-- 登录者为admin所拥有左侧的菜单列表 -->
+	<select id="ownerMenus" parameterType="HashMap" resultType="HashMap">
+		<![CDATA[ SELECT DISTINCT id,name,isParent,uri FROM sys_menu WHERE pId = #{id} AND type = 1 ORDER BY name]]>
+	</select>
+	
+	<!-- 登录者不是admin的所拥有的左侧的菜单列表 -->
+	<select id="queryMenuByUserId" parameterType="HashMap" resultType="HashMap">
+		<![CDATA[
+			SELECT id,name,isParent,uri FROM (SELECT DISTINCT sm.id,sm.name,sm.isParent,sm.uri FROM sys_menu sm,sys_user_menu su WHERE su.uid = #{uid}  AND pId = #{id} AND sm.id = su.mid AND sm.type = 1
+			UNION 
+			SELECT DISTINCT sm.id,sm.name,sm.isParent,sm.uri FROM sys_menu sm,sys_role_menu rm 
+			WHERE pId = #{id} AND sm.id = rm.mid AND rm.rid IN(
+				SELECT ur.rid FROM sys_user_role ur WHERE ur.uid = #{uid}
+			)
+			AND sm.type = 1 ) rm ORDER BY name
+		]]>
+	</select>
+	
+	<!-- 查询所有的菜单,用于菜单的添加或编辑 -->
+	<select id="queryAllMenu" parameterType="HashMap" resultType="HashMap">
+		SELECT id,name,isParent,uri,layer,type FROM sys_menu WHERE pId = #{id} AND type = 1
+	</select>
+	
+	<!-- easyui的数据列表,登录者不是admin -->
+	<select id="listDataUser" parameterType="HashMap" resultType="HashMap">
+		<![CDATA[ SELECT m.id,m.name,m.pId,m.layer,m.type,(SELECT u.name FROM sys_menu u WHERE u.id = m.pId)pName 
+		FROM sys_menu m ]]>
+		<trim prefix="WHERE" prefixOverrides="AND">
+			<if test="type != null and type != '' ">
+				AND m.type = #{type}
+			</if>
+			<if test="key != null and key != '' ">
+				AND m.name LIKE CONCAT('%',#{key},'%')
+			</if>
+		</trim>
+		ORDER BY m.type,m.layer,m.uri LIMIT #{section},#{pageSize}
+	</select>
+	
+	<!-- easyui的数据列表,登录者是admin -->
+	<select id="listData" parameterType="HashMap" resultType="HashMap">
+		<![CDATA[ SELECT m.id,m.name,m.uri,m.pId,m.layer,m.type,(SELECT u.name FROM sys_menu u WHERE u.id = m.pId)pName 
+		FROM sys_menu m ]]>
+		<trim prefix="WHERE" prefixOverrides="AND">
+			<if test="type != null and type != '' ">
+				AND m.type = #{type}
+			</if>
+			<if test="key != null and key != '' ">
+				AND m.name LIKE CONCAT('%',#{key},'%')
+			</if>
+		</trim>
+		ORDER BY m.type,m.layer,m.uri LIMIT #{section},#{pageSize}
+	</select>
+	<!-- easyui的数据列表总记录数|总条数 -->
+	<select id="listTotal" parameterType="HashMap" resultType="Integer">
+		<![CDATA[ SELECT COUNT(m.id)total FROM sys_menu m ]]>
+		<trim prefix="WHERE" prefixOverrides="AND">
+			<if test="type != null and type != '' ">
+				AND m.type = #{type}
+			</if>
+			<if test="key != null and key != '' ">
+				AND m.name LIKE CONCAT('%',#{key},'%')
+			</if>
+		</trim>
+	</select>
+	
+	<!-- 根据id获取全字段数据 -->
+	<select id="queryById" parameterType="HashMap" resultType="HashMap">
+		<![CDATA[ SELECT m.id,m.name,m.uri,m.pId,(SELECT sm.name FROM sys_menu sm WHERE sm.id = m.pId)pName,m.isParent,m.type,m.layer FROM sys_menu m WHERE id = #{id} ]]>
+	</select>
+	
+	<!-- admin所拥有某个页面里的按钮或行按钮权限|查询权限按钮,type=2查询按钮;type=3查询行按钮; -->
+	<select id="adminOwnerMenuType" parameterType="HashMap" resultType="HashMap">
+		<![CDATA[ SELECT DISTINCT name,uri FROM sys_menu WHERE pId = #{pId} AND type = #{type} ORDER BY name]]>
+	</select>
+	
+	<!-- 登录者不为admin时所拥有某个页面里的按钮或行按钮权限|查询权限按钮,type=2查询按钮;type=3查询行按钮;  -->
+	<select id="authTypeByUserId" parameterType="HashMap" resultType="HashMap">
+		<![CDATA[ 
+			SELECT name,uri FROM (SELECT DISTINCT sm.name,sm.uri FROM sys_menu sm,sys_user_menu su WHERE su.uid = #{uid}  AND pId = #{pId} AND type = #{type} AND sm.id = su.mid 
+			UNION 
+			SELECT DISTINCT sm.name,sm.uri FROM sys_menu sm,sys_role_menu rm 
+			WHERE pId = #{pId}	AND sm.id = rm.mid AND rm.rid IN(
+				SELECT ur.rid FROM sys_user_role ur WHERE ur.uid = #{uid}
+			)
+			AND sm.type = #{type})m ORDER BY name
+		]]>
+	</select>
+	
+	<!-- 删除菜单-行删除 -->
+	<delete id="delById" parameterType="String">
+		<![CDATA[ DELETE FROM sys_menu WHERE id = #{id} ]]>
+	</delete>
+	
+	<!-- 删除菜单时-删除与该id作为pId的都删除 -->
+	<delete id="del_menu_pid" parameterType="String">
+		<![CDATA[ DELETE FROM sys_menu WHERE pid = #{id} ]]>
+	</delete>
+	
+	<!-- 删除菜单时-删除与该id相关联的角色菜单表; -->
+	<delete id="del_menu_role" parameterType="String">
+		<![CDATA[ DELETE FROM sys_role_menu WHERE mid = #{id} ]]>
+	</delete>
+	
+	<!-- 删除菜单时-删除与该id相关联的账号私有菜单表; -->
+	<delete id="del_menu_account" parameterType="String">
+		<![CDATA[ DELETE FROM sys_user_menu WHERE mid = #{id} ]]>
+	</delete>
+	
+	<!-- 以菜单id查询子菜单 -->
+	<select id="queryIdByPid" parameterType="String" resultType="HashMap">
+		<![CDATA[ SELECT id FROM sys_menu WHERE pId = #{id} ]]>
+	</select>
+	
+	<!-- 批量删除以菜单 -->
+	<delete id="batchDelPid">
+		DELETE FROM sys_menu WHERE 
+			id IN
+		<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+
+	<!-- 根据id查询菜单层次级别关系 -->
+	<select id="findRelationById" parameterType="String" resultType="String">
+		<![CDATA[ SELECT relation FROM sys_menu WHERE id = #{pId}]]>
+	</select>
+	
+	<select id="findTypeById" parameterType="String" resultType="String">
+ 		<![CDATA[ SELECT type FROM sys_menu WHERE id = #{pId} ]]>
+	</select>
+	
+	<update id="editSState" parameterType="HashMap">
+	 	<![CDATA[
+			UPDATE sys_menu SET state = #{state} WHERE id = #{id}
+	   ]]>
+	</update>
+	
+	<update id="editUState" parameterType="HashMap">
+	 	<![CDATA[
+			update sys_menu SET ustate = #{state} WHERE id = #{id}
+	   ]]>
+	</update>
+	<select id="querylistByPid" parameterType="String" resultType="HashMap">
+		<![CDATA[ SELECT id FROM sys_menu WHERE type = 1 AND id = #{id} ]]>
+	</select>
+	
+	<!-- 根据系统编号提取所有菜单的上下级状态 -->
+	<select id="findMenussById" parameterType="String" resultType="HashMap">
+	   	<![CDATA[  
+	   		SELECT pId,ustate,state FROM sys_menu WHERE ID = #{id}
+	   	]]>
+	</select>
+	
+	<!-- 根据菜单编号提取下级菜单数据type=1 -->
+	<select id="findChildrenTreeById" parameterType="String" resultType="Integer">
+	   	<![CDATA[  
+	   		SELECT count(id)total FROM sys_menu WHERE pId = #{pId} AND type = 1
+	   	]]>
+	</select>
+	<!-- 提取菜单下级菜单数量（按钮、行按钮） -->
+	<select id="findChildrenClickById" parameterType="String" resultType="Integer">
+	   	<![CDATA[  
+	   		SELECT count(id)total FROM sys_menu WHERE pId = #{pId} AND (type = 2 OR type = 3)
+	   	]]>
+	</select>
+	
+	<select id="findPidById" parameterType="String" resultType="String">
+ 		<![CDATA[ SELECT pId FROM sys_menu WHERE id = #{id} ]]>
+	</select>
+	
+	<!-- 查询所有的父级菜单 -->
+	<select id="queryParentById" resultType="HashMap">
+	   	SELECT DISTINCT pId FROM sys_menu WHERE id IN
+		<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+             #{item}
+		</foreach>
+	</select>
+	
+	<!-- 根据id查询父级id -->
+	<select id="queryParentNodeById" parameterType="String" resultType="HashMap">
+		<![CDATA[ SELECT DISTINCT pId FROM sys_menu WHERE id = #{pId} ]]>
+	</select>
+	
+	<!-- 查询所有的表 -->
+	<select id="queryExistTable" parameterType="String" resultType="String">
+	    SELECT table_name FROM information_schema.tables WHERE table_name = #{tableName} AND table_schema = DATABASE()
+	</select>
+	
+	<!-- 根据表名查询表的字段和字段注释 -->
+	<select id="queryTable" resultType="HashMap" parameterType="String">
+	    SELECT column_name,column_comment FROM information_schema.COLUMNS WHERE table_name = #{tableName} AND table_schema = DATABASE()
+	</select>
+
+    <!-- 获取表的注释 -->
+    <select id="getTableComment" resultType="String" parameterType="String">
+        select TABLE_COMMENT from information_schema.TABLES where TABLE_SCHEMA = DATABASE() and table_name = #{tableName} LIMIT 1
+    </select>
+
+    <!-- 基于账号id获取所有的账号的拥有的菜单 -->
+    <select id="queryMenusByUserId" resultType="HashMap" parameterType="String">
+        SELECT id,uri FROM (
+        SELECT id,uri FROM sys_menu WHERE ID IN (
+            SELECT mid FROM sys_role_menu WHERE rid in (SELECT rid FROM sys_user_role WHERE uid = #{login_key}) AND uri IS NOT NULL
+        )
+        UNION
+        SELECT id,uri FROM sys_menu WHERE ID IN (SELECT mid FROM sys_user_menu WHERE uid = #{login_key}) AND uri IS NOT NULL
+        ) t WHERE uri != ''
+    </select>
+
+    <!-- 查询菜单数据 -->
+    <select id="queryMenu" resultType="HashMap">
+         SELECT kid id,title,pid,path,icon,level,order_by FROM core_menu ORDER BY order_by ASC
+    </select>
+</mapper>

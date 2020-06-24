@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="sys_role">
+	
+	<!-- 添加 -->
+	<insert id="add" parameterType="pfd">
+		<![CDATA[ INSERT INTO sys_role(rid,rname,uid) VALUES (#{rid},#{rname},#{uid})]]>
+	</insert>
+	
+	<!-- 添加或编辑时查询角色名称是否已存在 -->
+	<select id="queryRnameExist" parameterType="String" resultType="String">
+		<![CDATA[ SELECT rid FROM sys_role WHERE rname = #{rname}]]>
+	</select>
+	
+	<!-- 编辑 -->
+	<update id="edit" parameterType="pfd">
+		<![CDATA[ UPDATE sys_role SET rname = #{rname} WHERE rid = #{rid} ]]>
+	</update>
+	
+	<!-- 删除角色权限-行删除 -->
+	<delete id="delById" parameterType="String">
+		<![CDATA[ DELETE FROM sys_role WHERE rid = #{id} ]]>
+	</delete>
+	<!-- 行删除-删除对应的角色菜单 --> 
+	<delete id="delRoleMenuById" parameterType="String">
+		<![CDATA[ DELETE FROM sys_role_menu WHERE rid = #{id} ]]>
+	</delete>
+	<!-- 行删除-删除对应的账号角色 -->
+	<delete id="delUserRoleById" parameterType="String">
+		<![CDATA[ DELETE FROM sys_user_role WHERE rid = #{id} ]]>
+	</delete>
+	
+	<!-- 批量删除角色-->
+	<delete id="del">
+		DELETE FROM sys_role WHERE 
+			rid IN
+		<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	
+	<!-- 删除角色时删除对应的角色菜单-->
+	<delete id="delRoleMenu">
+		DELETE FROM sys_role_menu WHERE
+			rid IN
+		<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	
+	<!-- 删除角色时删除对应的账号角色-->
+	<delete id="delUserRole">
+		DELETE FROM sys_user_role WHERE
+			rid IN
+		<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	
+	<!-- 角色列表的数据 -->
+	<select id="listData" parameterType="HashMap" resultType="HashMap">
+        SELECT sr.rid,sr.rname,l_tb.total,lt_rm.mtotal FROM sys_role sr
+        LEFT JOIN (SELECT COUNT(rid) total,rid FROM sys_user_role GROUP BY rid) l_tb ON l_tb.rid = sr.rid
+        LEFT JOIN (SELECT rid,COUNT(rid) mtotal FROM sys_role_menu GROUP BY rid) lt_rm on lt_rm.rid = sr.rid
+		<trim prefix="WHERE" prefixOverrides="AND">
+			<if test="rname != null and rname != '' ">
+				AND sr.rname LIKE CONCAT('%',#{rname},'%')
+			</if>
+		</trim>
+		<choose>
+        	<when test="order != null and sort != null">
+        		<![CDATA[ ORDER BY ${sort} ${order} ]]>
+        	</when>
+        </choose>
+		<![CDATA[ LIMIT #{section},#{pageSize} ]]>
+	</select>
+	
+	<!-- 角色列表的总条数总记录数 -->
+	<select id="listTotal" parameterType="HashMap" resultType="Integer">
+		SELECT COUNT(sr.rid)total FROM sys_role sr
+        LEFT JOIN (SELECT COUNT(rid) total,rid FROM sys_user_role GROUP BY rid) l_tb
+        ON l_tb.rid = sr.rid
+		<trim prefix="WHERE" prefixOverrides="AND">
+			<if test="rname != null and rname != '' ">
+				AND sr.rname LIKE CONCAT('%',#{rname},'%')
+			</if>
+		</trim>
+	</select>
+	
+	<!-- 登录者为admin加载角色菜单分配查询 -->
+	<select id="roleMenu" parameterType="HashMap" resultType="HashMap">
+		<![CDATA[ 
+			SELECT a.id,a.name text,case when a.ustate = 1 then 'open' else 'closed' end state,CASE WHEN (SELECT count(rm.id)total FROM sys_role_menu rm WHERE rm.rid = #{rid} AND rm.mid = a.id)>0 THEN 'true' ELSE 'false' END checked
+ 				 FROM sys_menu a WHERE a.pid = #{pId} ORDER BY text
+ 		]]>
+	</select>
+	
+	<!-- 登录者为一般账号加载角色菜单分配查询 -->
+	<select id="roleMenuByLoginKey" parameterType="pfd" resultType="HashMap">
+		<![CDATA[ 
+			SELECT id,text,state,checked FROM (SELECT mu.id,mu.name text,case when mu.ustate = 1 then 'open' else 'closed' end state,CASE WHEN (SELECT count(rm.id)total FROM sys_role_menu rm WHERE rm.rid = #{rid}
+			AND rm.mid = lk.mid)>0 THEN 'true' ELSE 'false' END checked FROM (SELECT mid FROM sys_user_menu WHERE uid = #{login_key})lk,sys_menu mu WHERE mu.pid = #{pId} AND mu.id = lk.mid
+			UNION
+			SELECT mu.id,mu.name,case when mu.ustate = 1 then 'open' else 'closed' end state,
+			CASE WHEN (SELECT count(umu.id)total FROM sys_role_menu umu WHERE  umu.mid = mu.id AND umu.rid = #{rid})>0 THEN 'true' ELSE 'false' END checked FROM (
+			SELECT srm.mid FROM sys_role_menu srm WHERE srm.rid 
+			IN (SELECT sur.rid FROM sys_user_role sur WHERE sur.uid = #{login_key}))mm,sys_menu mu 
+			WHERE mu.id = mm.mid and mu.pid = #{pId} ) rm ORDER BY text
+ 		]]>
+	</select>
+	
+	<!-- 清空或删除已存在的角色菜单 -->
+	<delete id="delRoleMenuByRid" parameterType="String">
+		<![CDATA[ DELETE FROM sys_role_menu WHERE rid = #{rid} ]]>
+	</delete>
+	
+	<!-- 批量插入角色菜单表-角色菜单的保存 -->
+	<insert id="saveIds">
+		INSERT INTO sys_role_menu(id,rid,mid) VALUES
+		<foreach collection="list" item="item" index="index" separator="," >
+	       (#{item.id},#{item.rid},#{item.mid})
+	    </foreach>
+	</insert>
+</mapper>

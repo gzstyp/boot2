@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="bs_news">
+	
+	<!-- 添加数据 -->
+	<update id="add" parameterType="pfd">
+		<![CDATA[ INSERT INTO BS_NEWS (
+			nid,
+			uid,
+			title,
+			add_date,
+			details
+		) VALUES ( ]]><![CDATA[
+			#{nid},
+			#{uid},
+			#{title},
+			#{add_date},
+			#{details}
+		) ]]>
+	</update>
+	
+	<!-- 编辑数据 -->
+	<update id="edit" parameterType="pfd">
+		<![CDATA[ UPDATE BS_NEWS ]]>
+		<trim prefix="SET" suffixOverrides=",">
+		<if test="title != null and title != ''"><![CDATA[ title = #{title},]]></if>
+		<if test="details != null and details != ''"><![CDATA[ details = #{details} ]]></if>
+		</trim>
+		<![CDATA[ WHERE nid = #{nid} ]]>
+	</update>
+	
+	<!-- 行删除 -->
+	<delete id="delById" parameterType="String">
+		<![CDATA[ DELETE FROM BS_NEWS WHERE nid = #{nid} ]]> 
+	</delete>
+	
+	<!-- 删除|批量删除-->
+	<delete id="delIds">
+		DELETE FROM BS_NEWS WHERE 
+			nid IN
+		<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	
+	<!-- listData条件查询 -->
+	<sql id="sql_where_listData">
+		<trim prefix="WHERE" prefixOverrides="AND">
+		<if test="uid != null and uid != ''">
+			<![CDATA[ AND uid LIKE CONCAT('%',#{uid},'%') ]]>
+		</if>
+		<if test="title != null and title != ''">
+			<![CDATA[ AND title LIKE CONCAT('%',#{title},'%') ]]>
+		</if>
+		<if test="add_date != null and add_date != ''">
+			<![CDATA[ AND add_date LIKE CONCAT('%',#{add_date},'%') ]]>
+		</if>
+		<if test="details != null and details != ''">
+			<![CDATA[ AND details LIKE CONCAT('%',#{details},'%') ]]>
+		</if>
+		</trim>
+	</sql>
+	
+	<!-- 列表数据 -->
+	<select id="listData" parameterType="HashMap" resultType="HashMap">
+		<![CDATA[ 
+		SELECT
+			nid,
+			uid,
+			(SELECT su.account FROM sys_user su WHERE su.uid = n.uid)account,
+			title,
+			add_date,
+			details
+		FROM BS_NEWS n ]]>
+		<include refid="sql_where_listData"/>
+		<choose>
+    	<when test="order != null and sort != null">
+    		<![CDATA[ ORDER BY ${sort} ${order} ]]>
+    	</when>
+    	<otherwise>
+        	<![CDATA[  ]]>
+        </otherwise>
+        </choose>
+        <if test="section != null and pageSize != null ">
+        	<![CDATA[ LIMIT #{section},#{pageSize} ]]>
+		</if>
+	</select>
+	
+	<!-- 总条数总记录数 -->
+	<select id="listTotal" parameterType="HashMap" resultType="Integer">
+		<![CDATA[ SELECT COUNT(nid)TOTAL FROM BS_NEWS ]]>
+		<include refid="sql_where_listData"/>
+	</select>
+	
+	<!-- 根据id获取全字段数据 -->
+	<select id="queryById" parameterType="String" resultType="HashMap">
+		<![CDATA[
+		SELECT 
+			uid,
+			title,
+			add_date,
+			details
+		FROM BS_NEWS WHERE nid = #{nid} ]]>
+	</select>
+
+	<!-- 查询全部数据 -->
+	<select id="listAll" parameterType="HashMap" resultType="HashMap">
+		<![CDATA[ 
+		SELECT
+			nid,
+			uid,
+			title,
+			add_date,
+			details
+		FROM BS_NEWS ]]>
+		<trim prefix="WHERE" prefixOverrides="AND">
+		<if test="nid != null and nid != ''">
+			<![CDATA[ AND nid LIKE CONCAT('%',#{nid},'%') ]]>
+		</if>
+		<if test="uid != null and uid != ''">
+			<![CDATA[ AND uid LIKE CONCAT('%',#{uid},'%') ]]>
+		</if>
+		<if test="title != null and title != ''">
+			<![CDATA[ AND title LIKE CONCAT('%',#{title},'%') ]]>
+		</if>
+		<if test="add_date != null and add_date != ''">
+			<![CDATA[ AND add_date LIKE CONCAT('%',#{add_date},'%') ]]>
+		</if>
+		<if test="details != null and details != ''">
+			<![CDATA[ AND details LIKE CONCAT('%',#{details},'%') ]]>
+		</if>
+		</trim>
+	</select>
+</mapper>

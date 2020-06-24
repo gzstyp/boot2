@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="template">
+	
+	<!-- 添加 -->
+	<insert id="add" parameterType="pfd">
+		<![CDATA[  ]]>
+	</insert>
+	
+	<!-- 编辑 -->
+	<update id="edit" parameterType="pfd">
+		<![CDATA[  ]]>
+	</update>
+	
+	<!-- 行删除 -->
+	<delete id="delById" parameterType="String">
+		<![CDATA[ DELETE FROM table_name WHERE id = #{id} ]]>
+	</delete>
+	
+	<!-- 删除|批量删除-->
+	<delete id="delByIds">
+		DELETE FROM table_name WHERE 
+			kId IN
+		<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+
+    <!-- listData条件查询 -->
+    <sql id="where_sql_listData">
+        <trim prefix="WHERE" prefixOverrides="AND">
+            <if test="ASSAY_NAME != null and ASSAY_NAME != ''">
+                AND ASSAY_NAME = #{ASSAY_NAME}
+            </if>
+            <if test="DATE_START != null and DATE_START != ''">
+                <![CDATA[ AND TO_CHAR(ASSAY_TIME,'yyyy-MM-dd') >= #{DATE_START}]]>
+            </if>
+            <if test="DATE_END != null and DATE_END != ''">
+                <![CDATA[ AND TO_CHAR(ASSAY_TIME,'yyyy-MM-dd') <= #{DATE_END}]]>
+            </if>
+            <if test="STORE_BATCH_NO != null and STORE_BATCH_NO != ''">
+                AND STORE_BATCH_NO = #{STORE_BATCH_NO}
+            </if>
+            <if test="RELEASE_STATUS != null and RELEASE_STATUS != ''">
+                <choose>
+                    <when test="RELEASE_STATUS==0">
+                        <![CDATA[ AND RELEASE_STATUS != 1 ]]>
+                    </when>
+                    <when test="RELEASE_STATUS==5">
+                        AND SFFJ = 1
+                    </when>
+                    <when test="RELEASE_STATUS==6">
+                        AND SFFJ = 0
+                    </when>
+                    <otherwise>
+                        AND RELEASE_STATUS = #{RELEASE_STATUS}
+                    </otherwise>
+                </choose>
+            </if>
+        </trim>
+    </sql>
+
+    <!-- 各项化验结果的单项数据列表条件过滤 -->
+    <sql id="sql_where_listData">
+        <trim prefix="WHERE" prefixOverrides="AND">
+            <if test="SAMPLE_NO != null and SAMPLE_NO != ''">
+                AND SAMPLE_NO = #{SAMPLE_NO}
+            </if>
+            <if test="IS_COUNTER_CHECK != null and IS_COUNTER_CHECK != ''">
+                <choose>
+                    <when test="IS_COUNTER_CHECK ==2">
+                        AND IS_RECHECK = 1
+                    </when>
+                    <otherwise>
+                        AND COUNTERCHECK = #{IS_COUNTER_CHECK}
+                    </otherwise>
+                </choose>
+            </if>
+            <if test="DATE_START != null and DATE_START != ''">
+                <![CDATA[ AND TO_CHAR(BIZ_DATE,'yyyy-MM-dd') >= #{DATE_START} ]]>
+            </if>
+            <if test="DATE_END != null and DATE_END != ''">
+                <![CDATA[ AND TO_CHAR(BIZ_DATE,'yyyy-MM-dd') <= #{DATE_END} ]]>
+            </if>
+        </trim>
+    </sql>
+
+	<!-- 列表数据 -->
+	<select id="listData"  parameterType="HashMap" resultType="HashMap">
+		<![CDATA[ SELECT column1,column2 FROM table_name]]>
+		<trim prefix="WHERE" prefixOverrides="AND">
+			<if test="key_work != null and key_work != '' ">
+				AND column LIKE CONCAT('%',#{key_work},'%')
+			</if>
+		</trim>
+		<![CDATA[ LIMIT #{section},#{pageSize} ]]>
+	</select>
+	
+	<!-- 总条数总记录数 -->
+	<select id="listTotal"  parameterType="HashMap" resultType="Integer">
+		<![CDATA[ SELECT COUNT(kId)total FROM table_name ]]>
+		<trim prefix="WHERE" prefixOverrides="AND">
+			<if test="key_work != null and key_work != '' ">
+				AND column LIKE CONCAT('%',#{key_work},'%')
+			</if>
+		</trim>
+	</select>
+	
+	<!-- 根据id获取全字段数据 -->
+	<select id="queryById" parameterType="HashMap" resultType="HashMap">
+		<![CDATA[ SELECT column1,column2 FROM table_name WHERE id = #{id} ]]>
+	</select>
+</mapper>

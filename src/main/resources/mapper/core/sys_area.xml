@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="sys_area">
+	
+	<!-- 添加 -->
+	<insert id="add" parameterType="pfd">
+		<![CDATA[ INSERT INTO sys_area(date_create,date_modify,orders,full_name,name,parent) VALUES (#{date_create},#{date_modify},#{orders},#{full_name},#{name},#{parent}) ]]>
+	</insert>
+
+	<!-- 编辑 -->
+	<update id="edit" parameterType="pfd">
+		<![CDATA[ UPDATE sys_area SET date_modify = #{date_modify},orders = #{orders},full_name = #{full_name},name = #{name} WHERE id = #{id} ]]>
+	</update>
+	
+	<!-- 行删除 -->
+	<delete id="delById" parameterType="String">
+		DELETE FROM sys_area WHERE id = #{id}
+	</delete>
+	
+	<!-- 根据id获取全字段数据 -->
+	<select id="queryById" parameterType="String" resultType="HashMap">
+		<![CDATA[ SELECT date_create,date_modify,orders,full_name,name,parent FROM sys_area WHERE id = #{id} ]]>
+	</select>
+	
+	<!-- 数据显示-根据父级id查询数据 -->
+	<select id="getData" parameterType="HashMap" resultType="HashMap">
+		<![CDATA[ SELECT id,full_name,name,parent FROM sys_area sys ]]>
+		<trim prefix="WHERE" prefixOverrides="AND">
+			<if test="parent != null and parent != '' ">
+				AND parent = #{parent}
+			</if>
+			<if test="key_work != null and key_work != '' ">
+				AND name LIKE CONCAT('%',#{key_work},'%')
+			</if>
+		</trim>
+	</select>
+	<!-- 查询该id是否还有子节点区域 -->
+	<select id="childs"  parameterType="String" resultType="Integer">
+		<![CDATA[ SELECT COUNT(id)total FROM sys_area WHERE parent = #{id} ]]>
+	</select>
+	
+	<!-- 省市县选择-根据父级id查询数据 -->
+	<select id="queryArea" parameterType="HashMap" resultType="HashMap">
+		<![CDATA[ SELECT id,name,full_name,parent pId FROM sys_area WHERE parent = #{pId}]]>
+	</select>
+</mapper>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="sys_log">
+	
+	<!-- 添加记录日志 -->
+	<update id="add" parameterType="HashMap">
+		<![CDATA[ INSERT INTO sys_log(id,uid,name,handle,ctime,ip,info) VALUES (#{id},#{uid},#{name},#{handle},#{ctime},#{ip},#{info}) ]]>
+	</update>
+	
+	<!-- listData条件 -->
+	<sql id="sql_where_listData">
+		<trim prefix="WHERE" prefixOverrides="AND">
+			<if test="key_word != null and key_word != ''">
+				AND (sl.name LIKE CONCAT('%',#{key_word},'%') OR sl.info LIKE CONCAT('%',#{key_word},'%'))
+			</if>
+			<if test="handle != null and handle != ''">
+				AND sl.handle = #{handle}
+			</if>
+		</trim>
+	</sql>
+	
+	<!-- 系统日志的数据 -->
+	<select id="listData"  parameterType="HashMap" resultType="HashMap">
+		<![CDATA[ SELECT sl.id,IFNULL((SELECT su.account FROM sys_user su WHERE su.uid = sl.uid),'已删除或未知')account,sl.name,sl.location,sl.handle,sl.ctime,sl.ip,sl.info FROM sys_log sl]]>
+		<include refid="sql_where_listData"/>
+		<choose>
+        	<when test="order != null and sort != null">
+        		<![CDATA[ ORDER BY ${sort} ${order} ]]>
+        	</when>
+	        <otherwise>
+	        	<![CDATA[ ORDER BY sl.ctime DESC ]]>
+	        </otherwise>
+        </choose>
+        <![CDATA[ LIMIT #{section},#{pageSize} ]]>
+	</select>
+	
+	<!-- 系统日志的总条数总记录数 -->
+	<select id="listTotal" parameterType="HashMap" resultType="Integer">
+		<![CDATA[ SELECT COUNT(id)total FROM sys_log sl ]]>
+		<include refid="sql_where_listData"/>
+	</select>
+	
+	<update id="updateLog" parameterType="HashMap">
+		UPDATE sys_log SET location = #{location} WHERE id = #{id}
+	</update>
+	
+	<update id="updateIp" parameterType="HashMap">
+		UPDATE sys_log SET location = #{location},ip = #{ip} WHERE id = #{id}
+	</update>
+</mapper>
