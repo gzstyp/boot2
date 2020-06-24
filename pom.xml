@@ -12,16 +12,16 @@
     <properties>
         <project.build.code>UTF-8</project.build.code>
         <java.version>1.8</java.version>
-        <spring.version>5.1.9.RELEASE</spring.version>
+        <spring.version>5.1.12.RELEASE</spring.version>
         <poi.version>3.11</poi.version>
         <!-- 因为添加了属性 <tomcat.version>8.5.42</tomcat.version> 基于或依赖于本属性也会跟着改变了版本号,spring boot 默认是不支持jsp的,若想启用jsp则只需添加 tomcat-embed-jasper 和 tomcat-el-api 依赖即可  -->
-        <tomcat.version>9.0.31</tomcat.version>
+        <tomcat.version>9.0.35</tomcat.version>
     </properties>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.1.12.RELEASE</version>
+        <version>2.1.15.RELEASE</version>
         <relativePath/>
     </parent>
 
