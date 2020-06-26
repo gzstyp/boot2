@@ -79,7 +79,7 @@ public final class ToolCrypto {
      * @param b 字节数组
      * @return 字符串
     */
-    private final static String byteToHexString(byte b) {
+    private final static String byteToHexString(final byte b) {
         int ret = b;
         if (ret < 0) {
             ret += 256;
@@ -94,8 +94,8 @@ public final class ToolCrypto {
      * @param bytes 字节数组
      * @return 十六进制字符串
     */
-    private final static String byteArrayToHexString(byte[] bytes) {
-        StringBuffer sb = new StringBuffer();
+    private final static String byteArrayToHexString(final byte[] bytes) {
+        final StringBuffer sb = new StringBuffer();
         for (int i = 0; i < bytes.length; i++) {
             sb.append(byteToHexString(bytes[i]));
         }
@@ -107,8 +107,8 @@ public final class ToolCrypto {
      * @return map.get("private");map.get("public");
      * @throws Exception
     */
-    public final static HashMap<String, Object> getkey(String publicKey,String privateKey)  {
-        HashMap<String, Object> map = new HashMap<String, Object>(2);
+    public final static HashMap<String, Object> getkey(final String publicKey,final String privateKey)  {
+        final HashMap<String, Object> map = new HashMap<String, Object>(2);
         try {
             map.put("private",getPrivateKey(privateKey));
             map.put("public",getPublicKey(publicKey));
@@ -170,16 +170,14 @@ public final class ToolCrypto {
         final byte[] keyBytes = (new BASE64Decoder()).decodeBuffer(key);
         final X509EncodedKeySpec keySpec = new X509EncodedKeySpec(keyBytes);
         final KeyFactory keyFactory = KeyFactory.getInstance(RSA);
-        final PublicKey publicKey = keyFactory.generatePublic(keySpec);
-        return publicKey;
+        return keyFactory.generatePublic(keySpec);
     }
 
     private final static PrivateKey getPrivateKey(final String key) throws Exception {
         final byte[] keyBytes = (new BASE64Decoder()).decodeBuffer(key);
         final PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(keyBytes);
         final KeyFactory keyFactory = KeyFactory.getInstance(RSA);
-        final PrivateKey privateKey = keyFactory.generatePrivate(keySpec);
-        return privateKey;
+        return keyFactory.generatePrivate(keySpec);
     }
 
     /**
