@@ -296,6 +296,7 @@
             /**表格操作*/
             table : function(){
                 jsonData = {};
+                $(tableRows +" tbody").html('');/*清空*/
                 var exitIndex = layerFn.addOrEdit('表格操作','#table_edit',['600px','400px'], function(index){
                 },'<span style="color:#1e9fff;">添加行</span>',function(){
                     thisPage.addRow();
