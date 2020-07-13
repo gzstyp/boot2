@@ -156,6 +156,7 @@
 <script type="text/javascript">
     ;(function ($) {
         var tableRows='#tableRows';
+        var jsonData = {};
         thisPage = {
             datagrid : '#datagrid_sys_menu',
             toolbar : '#toolbar_sys_menu',
@@ -294,6 +295,7 @@
             },
             /**表格操作*/
             table : function(){
+                jsonData = {};
                 var exitIndex = layerFn.addOrEdit('表格操作','#table_edit',['600px','400px'], function(index){
                 },'<span style="color:#1e9fff;">添加行</span>',function(){
                     thisPage.addRow();
@@ -302,20 +304,31 @@
             },
             /**添加行*/
             addRow : function(){
+                var inputs = $(tableRows +' tbody tr td input');
+                //存值
+                for(var i=0;i<inputs.length;i++){
+                    var _obj = inputs[i];
+                    jsonData[_obj.id] = _obj.value;
+                }
                 var uuid = winFn.getUuid();//在应用中如果能确定uuid是传递来的参数且是唯一的话,uuid可直接替换成传递来的参数作为唯一值,然后还可以根据该uuid是否已重复添加了
                 var exist = $(tableRows +" tbody tr#" + uuid).html();//判断是否已添加
                 if(exist == null || exist == ''){
-                    var rowTemplate = '<tr id="'+uuid+'"><td>字段名称</td><td><select name="type" id="type"><option value="">类型</option><option value="1">字符串</option><option value="2">正整数</option><option value="3">char类型</option></select></td><td><input type="text" /></td><td><input type="checkbox" /></td><td><a href="javascript:;" title="删除当前行" onclick=thisPage.delRow("'+uuid+'")>删除</a></td></tr>';
+                    var rowTemplate = '<tr id="'+uuid+'"><td>字段名称</td><td><select name="type" id="type"><option value="">类型</option><option value="1">字符串</option><option value="2">正整数</option><option value="3">char类型</option></select></td><td><input type="text" id="annotation'+uuid+'" /></td><td><input type="checkbox" /></td><td><a href="javascript:;" title="删除当前行" onclick=thisPage.delRow("'+uuid+'")>删除</a></td></tr>';
                     var tableHtml = $(tableRows +" tbody").html();
                     tableHtml += rowTemplate;
                     $(tableRows +" tbody").html(tableHtml);
                     //winFn.tableMouse('view');
                 }
+                //取值
+                for(var key in jsonData){
+                    $('#' + key).val(jsonData[key]);
+                }
             },
             /**删除行*/
             delRow : function(uuid){
                 $("#"+uuid).remove();
-            },
+                delete jsonData['annotation'+uuid];
+            }
         };
 	thisPage.init();
 })(jQuery);

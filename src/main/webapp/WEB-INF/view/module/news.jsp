@@ -136,8 +136,8 @@
                         editType : type,
                         nid : winFn.getDomValue(thisPage.edit_keyId),
                         title : winFn.getDomValue('#title'),
-                        details : details,
-                    }
+                        details : details
+                    };
                     thisPage.commit(type,index,params);
 				});
                 winFn.clearFormData(thisPage.dialog_edit);//清空表单
