@@ -130,7 +130,7 @@
 	
 	<!-- 行删除 -->
 	<delete id="delById" parameterType="String">
-		DELETE FROM ${tableName} WHERE ${keyId} = ${r"#{"}${keyId}${r"}"}
+		DELETE FROM ${tableName} WHERE ${keyId} = ${r"#{"}${keyId}${r"}"} LIMIT 1
 	</delete>
 	
 	<!-- 删除|批量删除-->
@@ -209,7 +209,7 @@
 	
 	<!-- 总条数总记录数 -->
 	<select id="listTotal" parameterType="HashMap" resultType="Integer">
-		SELECT COUNT(${keyId}) TOTAL FROM ${tableName}
+		SELECT COUNT(${keyId}) TOTAL FROM ${tableName} LIMIT 1
 		<include refid="sql_where_listData"/>
 	</select>
 	

@@ -25,7 +25,7 @@ import org.springframework.web.context.WebApplicationContext;
  * @官网 http://www.fwtai.com
 */
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = Launch.class)
+@SpringBootTest(classes = Launcher.class)
 public class TestUserController {
 
     @Autowired

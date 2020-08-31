@@ -21,7 +21,7 @@ import java.util.HashMap;
  * @官网 http://www.fwtai.com
 */
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = Launch.class)
+@SpringBootTest(classes = Launcher.class)
 public class APIService {
 
     /**公钥*/

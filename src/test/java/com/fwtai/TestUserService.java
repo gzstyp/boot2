@@ -17,7 +17,7 @@ import org.springframework.test.context.junit4.SpringRunner;
  * @官网 http://www.fwtai.com
 */
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = Launch.class)
+@SpringBootTest(classes = Launcher.class)
 public class TestUserService {
 
     @Autowired

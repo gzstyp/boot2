@@ -15,7 +15,6 @@
         <spring.version>5.1.12.RELEASE</spring.version>
         <poi.version>3.11</poi.version>
         <!-- 因为添加了属性 <tomcat.version>8.5.42</tomcat.version> 基于或依赖于本属性也会跟着改变了版本号,spring boot 默认是不支持jsp的,若想启用jsp则只需添加 tomcat-embed-jasper 和 tomcat-el-api 依赖即可  -->
-        <tomcat.version>9.0.35</tomcat.version>
     </properties>
 
     <parent>
@@ -70,7 +69,7 @@
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <version>8.0.20</version>
+            <version>8.0.21</version>
             <scope>runtime</scope>
         </dependency>
         <!-- mybatis与Spring boot整合的核心,包含SqlSessionTemplate-->
@@ -187,7 +186,7 @@
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
-            <version>1.2.70</version>
+            <version>1.2.71</version>
         </dependency>
         <!--spring bootfreemarker模版的使用-->
         <dependency>
@@ -403,7 +402,7 @@
                 <!-- 此版本不能变,否则jsp页面报404 -->
                 <version>1.4.2.RELEASE</version>
                 <configuration>
-                    <mainClass>com.fwtai.Launch</mainClass>
+                    <mainClass>com.fwtai.Launcher</mainClass>
                 </configuration>
                 <executions>
                     <execution>
