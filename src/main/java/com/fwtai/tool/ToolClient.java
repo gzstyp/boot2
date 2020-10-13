@@ -9,6 +9,7 @@ import com.fwtai.config.ConfigFile;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.crypto.hash.SimpleHash;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -1902,7 +1903,7 @@ public final class ToolClient implements Serializable{
 	}
 
 	/**获取访问者真实的IP地址*/
-	public final static String getIp(final HttpServletRequest request){
+	public static String getIp(final HttpServletRequest request){
 		String ip = request.getHeader("x-forwarded-for");
 		if(ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)){
 			ip = request.getHeader("Proxy-Client-IP");
@@ -1923,6 +1924,33 @@ public final class ToolClient implements Serializable{
 		}
 		return ip;
 	}
+
+    /**获取访问者真实的IP地址*/
+    public static String getIpAddr(final HttpServletRequest request)
+        throws Exception {
+        if (request == null) {
+            throw (new Exception("getIpAddr method HttpServletRequest Object is null"));
+        }
+        String ipString = request.getHeader("x-forwarded-for");
+        if (StringUtils.isBlank(ipString) || "unknown".equalsIgnoreCase(ipString)) {
+            ipString = request.getHeader("Proxy-Client-IP");
+        }
+        if (StringUtils.isBlank(ipString) || "unknown".equalsIgnoreCase(ipString)) {
+            ipString = request.getHeader("WL-Proxy-Client-IP");
+        }
+        if (StringUtils.isBlank(ipString) || "unknown".equalsIgnoreCase(ipString)) {
+            ipString = request.getRemoteAddr();
+        }
+        // 多个路由时，取第一个非unknown的ip
+        final String[] arr = ipString.split(",");
+        for (final String str : arr) {
+            if (!"unknown".equalsIgnoreCase(str)) {
+                ipString = str;
+                break;
+            }
+        }
+        return ipString;
+    }
 
 	/**
 	 * 获取由HttpClient发送的数据的HttpServletRequest请求参数
