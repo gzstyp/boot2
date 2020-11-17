@@ -34,54 +34,54 @@ import java.util.concurrent.TimeUnit;
 public final class ToolOkHttp {
 
     /**GET异步请求,无参数或参数在url里*/
-    public final static void ajaxGet(final String url,final Callback callback){
+    public static void ajaxGet(final String url,final Callback callback){
         final OkHttpClient client = new OkHttpClient().newBuilder().readTimeout(6000,TimeUnit.MILLISECONDS).connectTimeout(6000,TimeUnit.MILLISECONDS).build();
         final Request request = new Request.Builder().url(url).build();
         client.newCall(request).enqueue(callback);
     }
 
     /**GET同步请求,无参数或参数在url里*/
-    public final static Response ajaxGet(final String url) throws IOException{
+    public static Response ajaxGet(final String url) throws IOException{
         final OkHttpClient client = new OkHttpClient().newBuilder().readTimeout(6000,TimeUnit.MILLISECONDS).connectTimeout(6000,TimeUnit.MILLISECONDS).build();
         final Request request = new Request.Builder().url(url).build();
         return client.newCall(request).execute();
     }
 
     /**POST异步请求,无参数或参数在url里*/
-    public final static void ajaxPost(final String url,final Callback callback){
+    public static void ajaxPost(final String url,final Callback callback){
         final Request request = postRequest(url);
         final OkHttpClient client = new OkHttpClient.Builder().build();
         client.newCall(request).enqueue(callback);
     }
 
     /**POST同步请求,无参数或参数在url里*/
-    public final static Response ajaxPost(final String url)throws IOException{
+    public static Response ajaxPost(final String url)throws IOException{
         final Request request = postRequest(url);
         final OkHttpClient client = new OkHttpClient.Builder().build();
         return client.newCall(request).execute();
     }
 
     /**POST同步请求,有参数请求*/
-    public final static Response ajaxPost(final String url,final HashMap<String,String> params)throws IOException{
+    public static Response ajaxPost(final String url,final HashMap<String,String> params)throws IOException{
         final Request request = postRequest(url,params);
         final OkHttpClient client = new OkHttpClient.Builder().build();
         return client.newCall(request).execute();
     }
 
     /**POST异步请求,有参数请求-推荐*/
-    public final static void ajaxPost(final String url,final HashMap<String,String> params,final Callback callback){
+    public static void ajaxPost(final String url,final HashMap<String,String> params,final Callback callback){
         final Request request = postRequest(url,params);
         final OkHttpClient client = new OkHttpClient.Builder().build();
         client.newCall(request).enqueue(callback);
     }
 
     /**组装POST请求参数-不带请求参数*/
-    private final static Request postRequest(final String url){
+    private static Request postRequest(final String url){
         return new Request.Builder().url(url).post(new FormBody.Builder().build()).build();
     }
 
     /**组装POST请求参数,适用于form表单提交,有带请求参数*/
-    private final static Request postRequest(final String url,final HashMap<String,String> params){
+    private static Request postRequest(final String url,final HashMap<String,String> params){
         final FormBody.Builder builder = new FormBody.Builder();
         if(params != null && params.size() > 0){
             for (final Entry<String,String> entry : params.entrySet()){
@@ -92,7 +92,7 @@ public final class ToolOkHttp {
     }
 
     /**解析请求返回的数据体*/
-    public final static String parseResponse(final Response response)throws Exception{
+    public static String parseResponse(final Response response)throws Exception{
         return response.body().string();
     }
 
@@ -101,7 +101,7 @@ public final class ToolOkHttp {
      * @param url 请求路径
      * @param headers 请求头key-value
     */
-    public final static Request getRequestHeader(final String url,final HashMap<String,String> headers){
+    public static Request getRequestHeader(final String url,final HashMap<String,String> headers){
         final Request.Builder builder = new Request.Builder();
         if(headers != null && headers.size() > 0){
             final Headers header = Headers.of(headers);
@@ -117,7 +117,7 @@ public final class ToolOkHttp {
      * @param params 请求的参数
      * @param headers 请求头key-value
     */
-    protected final static Request postRequestHeader(final String url,final HashMap<String,String> params,final HashMap<String,String> headers){
+    protected static Request postRequestHeader(final String url,final HashMap<String,String> params,final HashMap<String,String> headers){
         final FormBody.Builder builder = new FormBody.Builder();
         if(params != null && params.size() > 0){
             for(final String key : params.keySet()){
@@ -218,7 +218,7 @@ public final class ToolOkHttp {
     }
 
     /**异步请求-带请求头且封装多实体对象请求,即params里的value可以是基本类型(String,Integer)、实体、JSONObject对象*/
-    /*public final static void requestPostHeaderAsynch(final String url,final JSONObject params,final HashMap<String,String> headers,final IRequest iRequest){
+    /*public static void requestPostHeaderAsynch(final String url,final JSONObject params,final HashMap<String,String> headers,final IRequest iRequest){
         final OkHttpClient client = new OkHttpClient();
         final Request.Builder requestbuilder = new Request.Builder().url(url);
         for(final String key : headers.keySet()){
@@ -241,7 +241,7 @@ public final class ToolOkHttp {
     }*/
 
     /**同步请求-带请求头且封装多实体对象请求,即params里的value可以是基本类型(String,Integer)、实体、JSONObject对象*/
-    public final static String requestPostHeader(final String url,final JSONObject params,final HashMap<String,String> headers) throws Exception {
+    public static String requestPostHeader(final String url,final JSONObject params,final HashMap<String,String> headers) throws Exception {
         final OkHttpClient client = new OkHttpClient();
         final Request.Builder requestbuilder = new Request.Builder().url(url);
         for(final String key : headers.keySet()){
@@ -255,7 +255,7 @@ public final class ToolOkHttp {
         return response.body().string();
     }
 
-    private final static Request requestPostBeans(final String url,final JSONObject params){
+    private static Request requestPostBeans(final String url,final JSONObject params){
         final RequestBody requestBody = RequestBody.create(MediaType.parse("application/json; charset=utf-8"),JSON.toJSONString(params));
         return new Request.Builder().post(requestBody).tag(url+params).url(url).build();
     }
@@ -267,7 +267,7 @@ public final class ToolOkHttp {
      * @QQ 444141300
      * @创建时间 2020/1/19 20:40
     */
-    public final static String downloadImage(final String filePath,final String url){
+    public static String downloadImage(final String filePath,final String url){
         try {
             final OkHttpClient client = new OkHttpClient().newBuilder().readTimeout(60000,TimeUnit.MILLISECONDS).connectTimeout(60000,TimeUnit.MILLISECONDS).build();
             final ResponseBody body = client.newCall(new Request.Builder().url(url).build()).execute().body();
@@ -291,7 +291,7 @@ public final class ToolOkHttp {
 
     /***************************************************************************好使ok*************************************************************************************/
     /**解析请求返回的数据体*/
-    /*public final static String parseResponse(final Response response)throws IOException{
+    /*public static String parseResponse(final Response response)throws IOException{
         return response.body().string();
     }*/
 
@@ -314,7 +314,7 @@ public final class ToolOkHttp {
      "Name": "personListRequest"
      }
      */
-    /*public final static void ajaxPost(final String url,final JSONObject params,final Callback callback){
+    /*public static void ajaxPost(final String url,final JSONObject params,final Callback callback){
         final OkHttpClient client = new OkHttpClient().newBuilder().readTimeout(6000,TimeUnit.MILLISECONDS).connectTimeout(6000,TimeUnit.MILLISECONDS).build();
         final Request request = requestPostBeans(url,params);
         client.newCall(request).enqueue(callback);
@@ -339,7 +339,7 @@ public final class ToolOkHttp {
      "Name": "personListRequest"
      }
      */
-    /*public final static void ajaxPost(final String url,final JSONObject params)throws IOException{
+    /*public static void ajaxPost(final String url,final JSONObject params)throws IOException{
         final OkHttpClient client = new OkHttpClient().newBuilder().readTimeout(6000,TimeUnit.MILLISECONDS).connectTimeout(6000,TimeUnit.MILLISECONDS).build();
         final Request request = requestPostBeans(url,params);
         final Response response = client.newCall(request).execute();
@@ -354,7 +354,7 @@ public final class ToolOkHttp {
         System.out.println(json);
     }*/
 
-    /*public final static Request requestPostBeans(final String url,final JSONObject params){
+    /*public static Request requestPostBeans(final String url,final JSONObject params){
         final RequestBody requestBody = RequestBody.create(MediaType.parse("application/json; charset=utf-8"),JSON.toJSONString(params));
         return new Request.Builder().post(requestBody).tag(url+params).url(url).build();
     }
