@@ -30,8 +30,8 @@ import java.util.concurrent.TimeUnit;
  * @QQ号码 444141300
  * @Email service@fwtai.com
  * @官网 http://www.fwtai.com
- */
-public final class ToolOkHttp {
+*/
+public final class ToolOkHttp{
 
     /**GET异步请求,无参数或参数在url里*/
     public static void ajaxGet(final String url,final Callback callback){
@@ -68,6 +68,12 @@ public final class ToolOkHttp {
         return client.newCall(request).execute();
     }
 
+    public static Response ajaxPost(final String url,final JSONObject params)throws IOException{
+        final Request request = postRequest(url,params);
+        final OkHttpClient client = new OkHttpClient.Builder().build();
+        return client.newCall(request).execute();
+    }
+
     /**POST异步请求,有参数请求-推荐*/
     public static void ajaxPost(final String url,final HashMap<String,String> params,final Callback callback){
         final Request request = postRequest(url,params);
@@ -86,6 +92,16 @@ public final class ToolOkHttp {
         if(params != null && params.size() > 0){
             for (final Entry<String,String> entry : params.entrySet()){
                 builder.add(entry.getKey(),entry.getValue());
+            }
+        }
+        return new Request.Builder().url(url).post(builder.build()).build();
+    }
+
+    private static Request postRequest(final String url,final JSONObject params){
+        final FormBody.Builder builder = new FormBody.Builder();
+        if(params != null && params.size() > 0){
+            for (final Entry<String,Object> entry : params.entrySet()){
+                builder.add(entry.getKey(),String.valueOf(entry.getValue()));
             }
         }
         return new Request.Builder().url(url).post(builder.build()).build();
@@ -166,7 +182,7 @@ public final class ToolOkHttp {
      * @作者 田应平
      * @QQ 444141300
      * @创建时间 2019/9/30 21:16
-     */
+    */
     public static void uploadImage(final String url,final HashMap<String,File> images){
         final OkHttpClient client = new OkHttpClient();
         MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM);
@@ -177,11 +193,11 @@ public final class ToolOkHttp {
         final Request request = new Request.Builder().url(url).post(multipartBody).build();
         client.newCall(request).enqueue(new Callback(){
             @Override
-            public void onResponse(Call call,Response response) throws IOException{
+            public void onResponse(final Call call,final Response response) throws IOException{
                 System.out.println(response.body().string());
             }
             @Override
-            public void onFailure(Call call,IOException e){
+            public void onFailure(final Call call,final IOException e){
                 System.out.println(e.getMessage());
             }
         });
@@ -193,7 +209,7 @@ public final class ToolOkHttp {
      * @作者 田应平
      * @QQ 444141300
      * @创建时间 2019/9/30 21:16
-     */
+    */
     public static void uploadImage(final String url,final HashMap<String,File> images,final HashMap<String,String> params){
         final OkHttpClient client = new OkHttpClient();
         MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM);
@@ -386,8 +402,6 @@ public final class ToolOkHttp {
     }
 
     */
-
-
 
     /***************************************************************************好使ok*************************************************************************************/
 }
