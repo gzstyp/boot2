@@ -186,7 +186,7 @@ public final class ToolCrypto {
      * @param publicKey
      * @return
     */
-    public final static String encryptByPublicKey(final String data,final PublicKey publicKey) {
+    public final static String encryptPublicKey(final String data,final PublicKey publicKey) {
         try {
             final StringBuilder sb = new StringBuilder();
             final RSAPublicKey rsaPublicKey = (RSAPublicKey) publicKey;
@@ -210,7 +210,7 @@ public final class ToolCrypto {
      * @param privateKey
      * @return
     */
-    public final static String encryptByPrivateKey(final String data,final PrivateKey privateKey) {
+    public final static String encryptPrivateKey(final String data,final PrivateKey privateKey) {
         try {
             final StringBuilder sb = new StringBuilder();
             final RSAPrivateKey rsaPrivateKey = (RSAPrivateKey) privateKey;
@@ -237,7 +237,7 @@ public final class ToolCrypto {
     public final static String encryptByPublicKey(final String message,final String publicKey) {
         try {
             final PublicKey pk = getPublicKey(publicKey);
-            return encryptByPublicKey(message,pk);
+            return encryptPublicKey(message,pk);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -253,7 +253,7 @@ public final class ToolCrypto {
     public final static String encryptByPrivateKey(final String message,final String privateKey) {
         try {
             final PrivateKey pk = getPrivateKey(privateKey);
-            return encryptByPrivateKey(message,pk);
+            return encryptPrivateKey(message,pk);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
