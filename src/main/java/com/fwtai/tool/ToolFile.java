@@ -1,8 +1,10 @@
 package com.fwtai.tool;
 
-import net.lingala.zip4j.core.ZipFile;
+import net.lingala.zip4j.ZipFile;
+import net.lingala.zip4j.exception.ZipException;
 import net.lingala.zip4j.model.ZipParameters;
-import net.lingala.zip4j.util.Zip4jConstants;
+import net.lingala.zip4j.model.enums.CompressionLevel;
+import net.lingala.zip4j.model.enums.CompressionMethod;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 
@@ -27,47 +29,47 @@ import java.util.ArrayList;
 */
 public final class ToolFile{
 
-	public final static Resource getResource(final String filePath){
-		return new FileSystemResource(filePath);
-	}
-	
-	public final static boolean delFile(final String filePath){
-		final Resource res = new FileSystemResource(filePath);
-		if(res.exists()){
-			try {
-				res.getFile().delete();
-				return true;
-			} catch (IOException e){
-				e.printStackTrace();
-			}
-		}
-		return false;
-	}
-		
-	/**
-	 * 删除文件
-	 * @作者 田应平
-	 * @创建时间 2017年1月10日 上午10:50:23
-	 * @QQ号码 444141300
-	 * @主页 http://www.fwtai.com
-	*/
-	public final static void delete(final File file){
-		if(file.isFile()){
-			file.delete();
-			return;
-		}
-		if(file.isDirectory()){
-			File[] childFiles = file.listFiles();
-			if(childFiles == null || childFiles.length == 0){
-				file.delete();
-				return;
-			}
-			for(int i = 0; i < childFiles.length; i++){
-				delete(childFiles[i]);
-			}
-			file.delete();
-		}
-	}
+    public static Resource getResource(final String filePath){
+        return new FileSystemResource(filePath);
+    }
+
+    public static boolean delFile(final String filePath){
+        final Resource res = new FileSystemResource(filePath);
+        if(res.exists()){
+            try {
+                res.getFile().delete();
+                return true;
+            } catch (IOException e){
+                e.printStackTrace();
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 删除文件
+     * @作者 田应平
+     * @创建时间 2017年1月10日 上午10:50:23
+     * @QQ号码 444141300
+     * @主页 http://www.fwtai.com
+    */
+    public static void delete(final File file){
+        if(file.isFile()){
+            file.delete();
+            return;
+        }
+        if(file.isDirectory()){
+            final File[] childFiles = file.listFiles();
+            if(childFiles == null || childFiles.length == 0){
+                file.delete();
+                return;
+            }
+            for(int i = 0; i < childFiles.length; i++){
+                delete(childFiles[i]);
+            }
+            file.delete();
+        }
+    }
 
     /**
      * 对文件夹的文件批量重命名
@@ -78,7 +80,7 @@ public final class ToolFile{
      * @QQ 444141300
      * @创建时间 2019/4/18 10:22
     */
-    public static final boolean dirRename(final String pathDir,final String expression,final String target){
+    public static boolean dirRename(final String pathDir,final String expression,final String target){
         final File dir = new File(pathDir);
         if (expression == null) {
             return false;
@@ -103,42 +105,42 @@ public final class ToolFile{
         }
     }
 
-	/**
-	 * 压缩|打包成.zip文件,压缩包含当前目录及目录下的文件夹,出异常则压缩失败
-	 * @param folderPath 需要压缩的目标目录;如 D:\\zip\\dir
-	 * @param zipFilePath 压缩成功后zip文件,含全路径;如 D:\\zip\\dir\\zipxx.zip
-	*/
-	public final static void zipCompressFolder(final String folderPath,final String zipFilePath) throws Exception{
-		final ZipFile zipFile = new ZipFile(zipFilePath);
-		final ZipParameters parameters = new ZipParameters();
-		parameters.setCompressionMethod(Zip4jConstants.COMP_DEFLATE);    
-		parameters.setCompressionLevel(Zip4jConstants.DEFLATE_LEVEL_NORMAL);
-		zipFile.addFolder(folderPath,parameters);
-	}
-	
-	/**
-	 * 压缩|打包成.zip文件,压缩包不含当前的压缩目录及目录下的文件夹,出异常则压缩失败
-	 * @param folderPath 需要压缩的目标目录;如 D:\\zip\\dir
-	 * @param zipFilePath 压缩成功后zip文件,含全路径;如 D:\\zip\\dir\\zipxx.zip
-	*/
-	public final static void zipCompress(final String folderPath,final String zipFilePath)throws Exception{
-		final ZipFile zipFile = new ZipFile(zipFilePath);
-		final File[] files = new File(folderPath).listFiles();
-		final ArrayList<File> listFiles = new ArrayList<File>();
-		for(File file : files){
+    /**
+     * 压缩|打包成.zip文件,压缩包含当前目录及目录下的文件夹,出异常则压缩失败
+     * @param folderPath 需要压缩的目标目录;如 D:\\zip\\dir
+     * @param zipFilePath 压缩成功后zip文件,含全路径;如 D:\\zip\\dir\\zipxx.zip
+    */
+    public static void zipCompressFolder(final String folderPath,final String zipFilePath) throws Exception{
+        final ZipFile zipFile = new ZipFile(zipFilePath);
+        final ZipParameters parameters = new ZipParameters();
+        parameters.setCompressionMethod(CompressionMethod.DEFLATE);
+        parameters.setCompressionLevel(CompressionLevel.MAXIMUM);
+        zipFile.addFolder(new File(folderPath),parameters);
+    }
+
+    /**
+     * 压缩|打包成.zip文件,压缩包不含当前的压缩目录及目录下的文件夹,出异常则压缩失败
+     * @param folderPath 需要压缩的目标目录;如 D:\\zip\\dir
+     * @param zipFilePath 压缩成功后zip文件,含全路径;如 D:\\zip\\dir\\zipxx.zip
+    */
+    public static void zipCompress(final String folderPath,final String zipFilePath)throws Exception{
+        final ZipFile zipFile = new ZipFile(zipFilePath);
+        final File[] files = new File(folderPath).listFiles();
+        final ArrayList<File> listFiles = new ArrayList<File>();
+        for(final File file : files){
             if(!file.isDirectory())
-            listFiles.add(file);
+                listFiles.add(file);
         }
-		final ZipParameters parameters = new ZipParameters();
-		parameters.setCompressionMethod(Zip4jConstants.COMP_DEFLATE);    
-		parameters.setCompressionLevel(Zip4jConstants.DEFLATE_LEVEL_NORMAL);
-		zipFile.addFiles(listFiles,parameters);
-	}
-	
-	private final static byte[] analysisSHA256(final String filename) throws Exception{
-    	final InputStream fis =  new FileInputStream(filename);
-    	final byte[] buffer = new byte[1024];
-    	final MessageDigest complete = MessageDigest.getInstance("SHA-256");
+        final ZipParameters parameters = new ZipParameters();
+        parameters.setCompressionMethod(CompressionMethod.DEFLATE);
+        parameters.setCompressionLevel(CompressionLevel.ULTRA);
+        zipFile.addFiles(listFiles,parameters);
+    }
+
+    private static byte[] analysisSHA256(final String filename) throws Exception{
+        final InputStream fis =  new FileInputStream(filename);
+        final byte[] buffer = new byte[1024];
+        final MessageDigest complete = MessageDigest.getInstance("SHA-256");
         int numRead;
         do{
             numRead = fis.read(buffer);
@@ -149,10 +151,10 @@ public final class ToolFile{
         fis.close();
         return complete.digest();
     }
-    
-	/**获取文件SHA256值*/
-    public final static String getSHA256(final String filename) throws Exception{
-    	final byte[] b = analysisSHA256(filename);
+
+    /**获取文件SHA256值*/
+    public static String getSHA256(final String filename) throws Exception{
+        final byte[] b = analysisSHA256(filename);
         String result = "";
         for (int i=0; i < b.length; i++){
             result += Integer.toString(( b[i] & 0xff ) + 0x100, 16).substring(1);
@@ -160,49 +162,49 @@ public final class ToolFile{
         return result;
     }
 
-	/**
-	 * 复制文件夹到另外的文件夹
-	 * @param
-	 * @作者 田应平
-	 * @QQ 444141300
-	 * @创建时间 2018/5/1 18:19
-	*/
-	public static final boolean fileCopy(final File s,final File t) {
-		FileInputStream fi = null;
-		FileOutputStream fo = null;
-		FileChannel in = null;
-		FileChannel out = null;
-		try {
-			fi = new FileInputStream(s);
-			fo = new FileOutputStream(t);
-			in = fi.getChannel();//得到对应的文件通道
-			out = fo.getChannel();//得到对应的文件通道
-			in.transferTo(0, in.size(), out);//连接两个通道，并且从in通道读取，然后写入out通道
-			return true;
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				fi.close();
-				in.close();
-				fo.close();
-				out.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-		return false;
-	}
+    /**
+     * 复制文件夹到另外的文件夹
+     * @param
+     * @作者 田应平
+     * @QQ 444141300
+     * @创建时间 2018/5/1 18:19
+    */
+    public static boolean fileCopy(final File s,final File t) {
+        FileInputStream fi = null;
+        FileOutputStream fo = null;
+        FileChannel in = null;
+        FileChannel out = null;
+        try {
+            fi = new FileInputStream(s);
+            fo = new FileOutputStream(t);
+            in = fi.getChannel();//得到对应的文件通道
+            out = fo.getChannel();//得到对应的文件通道
+            in.transferTo(0, in.size(), out);//连接两个通道，并且从in通道读取，然后写入out通道
+            return true;
+        } catch (final IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                fi.close();
+                in.close();
+                fo.close();
+                out.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return false;
+    }
 
+    //全路径,带后缀名.txt
     public final boolean writeToFile(final String filePath,final String content){
-        FileWriter fw = null;
-        File f = new File("a.txt");
+        File f = new File(filePath);
         try{
             if(!f.exists()){
                 f.createNewFile();
             }
-            fw = new FileWriter(f);
-            BufferedWriter out = new BufferedWriter(fw);
+            final FileWriter fw = new FileWriter(f);
+            final BufferedWriter out = new BufferedWriter(fw);
             out.write(content,0,content.length() - 1);
             out.close();
             return true;
@@ -210,6 +212,32 @@ public final class ToolFile{
             e.printStackTrace();
             return false;
         }
+    }
+
+    /**
+     * 解压zip文件
+     * @param zipFilePath 文件路径
+     * @param targetPath 解压到目标路径
+     * @throws ZipException
+    */
+    public static void unzip(final String zipFilePath,final String targetPath) throws Exception{
+        final ZipFile zipFile = new ZipFile(zipFilePath);
+        zipFile.extractAll(targetPath);
+    }
+
+    /**
+     * 解压zip文件（带密码）
+     * @param zipFilePath 文件路径
+     * @param targetPath 解压到目标路径
+     * @param password 解压密码
+     * @throws ZipException
+    */
+    public static void unzip(final String zipFilePath,final String targetPath,final String password) throws Exception{
+        final ZipFile zipFile = new ZipFile(zipFilePath);
+        if (zipFile.isEncrypted()) {
+            zipFile.setPassword(password.toCharArray());
+        }
+        zipFile.extractAll(targetPath);
     }
 
     protected static final boolean bilibili(final String pathDir){
