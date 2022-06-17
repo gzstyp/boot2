@@ -186,7 +186,7 @@
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
-            <version>1.2.74</version>
+            <version>1.2.83</version>
         </dependency>
         <!--spring bootfreemarker模版的使用-->
         <dependency>
